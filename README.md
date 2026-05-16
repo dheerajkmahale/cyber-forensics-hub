@@ -2,5 +2,5 @@
 https://idea.unisys.com/D8895
 
 <p align="center">
-  <img src="assetsbanner.png" width="100%">
+  <img src="banner.png" width="100%">
 </p>
