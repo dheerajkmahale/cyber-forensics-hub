@@ -16,12 +16,14 @@ export function useIsAdmin() {
       return;
     }
     setLoading(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase as any)
       .from("user_roles")
       .select("role")
       .eq("user_id", user.id)
       .eq("role", "admin")
       .maybeSingle()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then(({ data }: any) => {
         if (cancelled) return;
         setIsAdmin(!!data);

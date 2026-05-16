@@ -24,6 +24,7 @@ const AdminOverviewTab: React.FC = () => {
 
   useEffect(() => {
     (async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: uploads } = await (supabase as any)
         .from("analysis_uploads")
         .select("id,user_id,file_name,created_at,transaction_count,suspicious_count,processing_time_ms")
@@ -33,10 +34,12 @@ const AdminOverviewTab: React.FC = () => {
       const list: UploadRow[] = uploads ?? [];
       const uids = Array.from(new Set(list.map((r) => r.user_id)));
       if (uids.length) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data: profiles } = await (supabase as any)
           .from("profiles")
           .select("user_id, display_name")
           .in("user_id", uids);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const map = new Map<string, string>((profiles ?? []).map((p: any) => [p.user_id, p.display_name]));
         list.forEach((r) => (r.display_name = map.get(r.user_id) ?? null));
       }

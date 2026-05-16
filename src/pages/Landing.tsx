@@ -295,10 +295,14 @@ const Landing: React.FC = () => {
           supabase.from("fraud_rings").select("id", { count: "exact", head: true }).gte("created_at", twoDaysAgo).lt("created_at", oneDayAgo),
         ]);
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const txTimestamps = (txAll.data ?? []).map((r: any) => r.created_at);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const uploadTimestamps = (uploadsAll.data ?? []).map((r: any) => r.created_at);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const ringTimestamps = (ringsAll.data ?? []).map((r: any) => r.created_at);
         const accountsRows: Array<{ risk_score: number; flags: string[] | null; created_at: string }> =
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (accountsAll.data as any) ?? [];
 
         const alertsScanned = txTimestamps.length;

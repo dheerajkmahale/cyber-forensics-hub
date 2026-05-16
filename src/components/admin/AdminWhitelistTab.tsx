@@ -25,6 +25,7 @@ const AdminWhitelistTab: React.FC = () => {
 
   const load = async () => {
     setLoading(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data } = await (supabase as any)
       .from("trusted_accounts")
       .select("*")
@@ -41,6 +42,7 @@ const AdminWhitelistTab: React.FC = () => {
     const ref = accountRef.trim();
     if (!ref) return;
     setAdding(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase as any)
       .from("trusted_accounts")
       .insert({ account_ref: ref, reason: reason.trim(), created_by: user?.id ?? null });
@@ -56,6 +58,7 @@ const AdminWhitelistTab: React.FC = () => {
   };
 
   const handleRemove = async (id: string, ref: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase as any).from("trusted_accounts").delete().eq("id", id);
     if (error) return toast.error(error.message);
     toast.success(`${ref} removed from whitelist`);

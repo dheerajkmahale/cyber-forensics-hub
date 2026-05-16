@@ -6,19 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AnalysisResult } from "@/types/fraud";
 import { maskSensitiveValue } from "@/lib/privacy";
 
-// Supported languages with Web Speech API codes
-const LANGUAGES = [
-  { code: "en", label: "English",    voice: "en-IN" },
-  { code: "hi", label: "हिन्दी",     voice: "hi-IN" },
-  { code: "te", label: "తెలుగు",     voice: "te-IN" },
-  { code: "ta", label: "தமிழ்",      voice: "ta-IN" },
-  { code: "kn", label: "ಕನ್ನಡ",      voice: "kn-IN" },
-  { code: "ml", label: "മലയാളം",    voice: "ml-IN" },
-  { code: "mr", label: "मराठी",      voice: "mr-IN" },
-  { code: "bn", label: "বাংলা",       voice: "bn-IN" },
-  { code: "gu", label: "ગુજરાતી",    voice: "gu-IN" },
-  { code: "pa", label: "ਪੰਜਾਬੀ",     voice: "pa-IN" },
-];
+import { LANGUAGES, getTranslation, findBestVoice } from "@/lib/voice-config";
 
 export type VoiceScreenContext = "upload" | "graph" | "summary";
 
@@ -46,6 +34,7 @@ export const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const [autoRead, setAutoRead] = useState(false);
   const [demoRunning, setDemoRunning] = useState(false);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -58,28 +47,44 @@ export const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const speak = useCallback((text: string) => {
+    if (muted || !synthRef.current || !enabled) return;
+    synthRef.current.cancel();
+    
+    const utt = new SpeechSynthesisUtterance(text);
+    const bestVoice = findBestVoice(language);
+    
+    if (bestVoice) {
+      utt.voice = bestVoice;
+    }
+    
+    utt.lang = LANGUAGES.find(l => l.code === language)?.voice || "en-IN";
+    utt.rate = 0.9;
+    utt.pitch = 1.0;
+    
+    utt.onstart = () => setStatus("speaking");
+    utt.onend = () => setStatus("idle");
+    utt.onerror = (e) => {
+      console.error("SpeechSynthesis Error:", e);
+      setStatus("idle");
+    };
+    
+    synthRef.current.speak(utt);
+  }, [language, muted, enabled]);
+
   // Auto-read summary when results arrive (if enabled)
   useEffect(() => {
     if (autoRead && analysisResult && currentScreen === "summary") {
       const summary = analysisResult.summary;
-      const msg = `Analysis complete. Found ${summary.suspicious_accounts_count} suspicious accounts and ${summary.fraud_rings_detected} fraud rings across ${summary.total_accounts} total accounts.`;
+      const msg = getTranslation(language, "analysisComplete", {
+        suspicious: summary.suspicious_accounts_count,
+        rings: summary.fraud_rings_detected,
+        total: summary.total_accounts
+      });
       addAssistantMessage(msg);
       speak(msg);
     }
-  }, [analysisResult, autoRead, currentScreen]);
-
-  const speak = useCallback((text: string) => {
-    if (muted || !synthRef.current || !enabled) return;
-    synthRef.current.cancel();
-    const utt = new SpeechSynthesisUtterance(text);
-    const lang = LANGUAGES.find(l => l.code === language);
-    utt.lang = lang?.voice || "en-IN";
-    utt.rate = 0.9;
-    utt.onstart = () => setStatus("speaking");
-    utt.onend = () => setStatus("idle");
-    utt.onerror = () => setStatus("idle");
-    synthRef.current.speak(utt);
-  }, [language, muted, enabled]);
+  }, [analysisResult, autoRead, currentScreen, speak]);
 
   const addAssistantMessage = (text: string) => {
     setMessages(prev => [...prev, { role: "assistant", text }]);
@@ -92,7 +97,7 @@ export const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
     try {
       // Build rich context based on current screen
-      let context: any = { screen: currentScreen };
+      let context: Record<string, unknown> = { screen: currentScreen };
 
       if (analysisResult) {
         const { summary, suspicious_accounts, fraud_rings, smurfing, shell_chains } = analysisResult;
@@ -126,17 +131,19 @@ export const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
       if (error) throw error;
 
-      const replyText = data?.reply || "I couldn't process that. Please try again.";
+      const replyText = data?.reply || getTranslation(language, "noProcess");
       addAssistantMessage(replyText);
       speak(replyText);
     } catch (err) {
-      const errMsg = "Sorry, I encountered an error. Please try again.";
+      console.error("Voice Assistant Error:", err);
+      const errMsg = getTranslation(language, "error");
       addAssistantMessage(errMsg);
       setStatus("idle");
     }
   }, [analysisResult, language, speak, enabled, currentScreen, processingTime]);
 
   const startListening = useCallback(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
       sendMessage("How do I use this app?");
@@ -153,7 +160,9 @@ export const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     recognition.interimResults = true;
 
     recognition.onstart = () => setStatus("listening");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     recognition.onresult = (e: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const t = Array.from(e.results).map((r: any) => r[0].transcript).join("");
       setTranscript(t);
       if (e.results[e.results.length - 1].isFinal) {
@@ -204,20 +213,20 @@ export const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   };
 
   const statusLabels: Record<Status, string> = {
-    idle: "Ready",
-    listening: "Listening...",
-    processing: "Processing...",
-    speaking: "Speaking...",
+    idle: getTranslation(language, "ready"),
+    listening: getTranslation(language, "listening"),
+    processing: getTranslation(language, "processing"),
+    speaking: getTranslation(language, "speaking"),
   };
 
   const currentLang = LANGUAGES.find(l => l.code === language);
 
   // Quick context commands based on current screen
   const quickCmds = currentScreen === "upload"
-    ? ["CSV format?", "How to upload?", "What columns are needed?"]
+    ? [getTranslation(language, "quickCsvFormat"), getTranslation(language, "quickHowToUpload"), getTranslation(language, "quickColumns")]
     : currentScreen === "graph"
-    ? ["Explain suspicious nodes", "What are fraud rings?", "Show smurfing pattern"]
-    : ["Summarize findings", "What is fan-in pattern?", "How many fraud rings?"];
+    ? [getTranslation(language, "quickExplainNodes"), getTranslation(language, "quickWhatAreRings"), getTranslation(language, "quickShowSmurfing")]
+    : [getTranslation(language, "quickSummarize"), getTranslation(language, "quickFanIn"), getTranslation(language, "quickHowManyRings")];
 
   return (
     <>
@@ -313,10 +322,9 @@ export const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           <div className="h-52 overflow-y-auto p-3 space-y-2">
             {messages.length === 0 && (
               <div className="text-center text-xs font-mono text-muted-foreground/50 mt-6">
-                <p>Press the mic and ask:</p>
-                <p className="mt-1">"Explain this fraud ring"</p>
-                <p>"Why is this account suspicious?"</p>
-                <p>"Explain in Telugu"</p>
+                <p>{getTranslation(language, "pressMic")}</p>
+                <p className="mt-1">"Why is this account suspicious?"</p>
+                <p>"How many fraud rings?"</p>
               </div>
             )}
             {messages.map((msg, i) => (
@@ -349,8 +357,8 @@ export const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               }
             >
               {status === "listening"
-                ? <><MicOff className="w-4 h-4" /> STOP</>
-                : <><Mic className="w-4 h-4" /> SPEAK</>}
+                ? <><MicOff className="w-4 h-4" /> {getTranslation(language, "stop")}</>
+                : <><Mic className="w-4 h-4" /> {getTranslation(language, "speak")}</>}
             </button>
 
             {/* Auto-read toggle */}
@@ -390,7 +398,7 @@ export const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               style={{ background: "hsl(45 100% 55% / 0.1)", border: "1px solid hsl(45 100% 55% / 0.4)", color: "hsl(45 100% 55%)" }}
             >
               <Play className="w-3.5 h-3.5" />
-              {demoRunning ? "DEMO RUNNING..." : "DEMO WALKTHROUGH"}
+              {demoRunning ? getTranslation(language, "demoRunning") : getTranslation(language, "demo")}
             </button>
           </div>
         </div>

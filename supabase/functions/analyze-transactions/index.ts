@@ -31,6 +31,7 @@ function jsonResponse(body: Record<string, unknown>, status = 200) {
 
 function sanitizeId(value: unknown, field: string, row: number): string {
   if (typeof value !== "string") throw new Error(`Row ${row}: ${field} must be text`);
+  // eslint-disable-next-line no-control-regex
   const sanitized = value.trim().replace(/[\u0000-\u001F\u007F<>`"'\\]/g, "");
   if (!ID_PATTERN.test(sanitized)) throw new Error(`Row ${row}: ${field} contains unsupported characters`);
   return sanitized;
@@ -394,6 +395,7 @@ serve(async (req) => {
       shell_chain_length: cfgRow?.shell_chain_length ?? 3,
     };
     const { data: trustedRows } = await supabase.from("trusted_accounts").select("account_ref");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const trustedSet = new Set<string>((trustedRows ?? []).map((r: any) => r.account_ref));
 
     const graph = buildGraph(transactions);

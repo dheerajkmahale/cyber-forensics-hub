@@ -79,6 +79,7 @@ const RingsTable: React.FC<{ fraudRings: FraudRing[]; privacyMode: boolean }> = 
   const sorted = useMemo(() => {
     if (!sortDir) return fraudRings;
     return [...fraudRings].sort((a, b) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let va: any, vb: any;
       if (sortCol === "ring_id") { va = a.ring_id; vb = b.ring_id; }
       else if (sortCol === "type") { va = a.type; vb = b.type; }
@@ -180,8 +181,10 @@ const AccountsTable: React.FC<{ suspiciousAccounts: SuspiciousAccount[]; privacy
   const sorted = useMemo(() => {
     if (!sortDir || sortCol === "idx" || sortCol === "reasons") return suspiciousAccounts;
     return [...suspiciousAccounts].sort((a, b) => {
-      let va: any = sortCol === "score" ? a.score : a.account_id;
-      let vb: any = sortCol === "score" ? b.score : b.account_id;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const va: any = sortCol === "score" ? a.score : a.account_id;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const vb: any = sortCol === "score" ? b.score : b.account_id;
       if (va < vb) return sortDir === "asc" ? -1 : 1;
       if (va > vb) return sortDir === "asc" ? 1 : -1;
       return 0;

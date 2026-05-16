@@ -24,6 +24,7 @@ const AdminConfigTab: React.FC = () => {
 
   useEffect(() => {
     (async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data } = await (supabase as any)
         .from("detection_config")
         .select("*")
@@ -40,6 +41,7 @@ const AdminConfigTab: React.FC = () => {
   const handleSave = async () => {
     if (!config) return;
     setSaving(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase as any)
       .from("detection_config")
       .update({

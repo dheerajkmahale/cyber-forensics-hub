@@ -17,6 +17,7 @@ const AdminLogin: React.FC = () => {
   const location = useLocation();
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ((location.state as any)?.denied) setDenied(true);
   }, [location.state]);
 
@@ -30,6 +31,7 @@ const AdminLogin: React.FC = () => {
       const userId = data.user?.id;
       if (!userId) throw new Error("No session");
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: roleRow } = await (supabase as any)
         .from("user_roles")
         .select("role")

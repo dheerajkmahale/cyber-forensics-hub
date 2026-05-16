@@ -15,6 +15,7 @@ export const maskAmount = (value: number | string | null | undefined): string =>
 export const sanitizeCsvCell = (value: string): string => {
   const trimmed = value.trim().replace(/^"|"$/g, "");
   return trimmed
+    // eslint-disable-next-line no-control-regex
     .replace(/[\u0000-\u001F\u007F<>`"'\\]/g, "")
     .replace(/^[=+@-]+/, "")
     .slice(0, 120);

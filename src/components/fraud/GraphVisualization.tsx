@@ -33,12 +33,14 @@ export const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   onNodeSelect,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const graphRef = useRef<any>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const mousePosRef = useRef({ x: 0, y: 0 });
   const [dimensions, setDimensions] = useState({ width: 600, height: 500 });
   const [filterMode, setFilterMode] = useState<FilterMode>("all");
   const [selectedRing, setSelectedRing] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [hoveredNode, setHoveredNode] = useState<any>(null);
 
   // Build ring membership map (memoized — only recomputes when fraudRings changes)
@@ -138,6 +140,7 @@ export const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     };
   }, [filteredNodes, filteredEdges, ringMemberMap, currentTime]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const nodeCanvasObject = useCallback((node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
     const label = privacyMode ? maskSensitiveValue(node.id) : node.id;
     const fontSize = Math.max(7, 11 / globalScale);
@@ -204,10 +207,12 @@ export const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     ctx.globalAlpha = 1;
   }, [selectedRingMembers, ringColorMap, privacyMode]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleNodeHover = useCallback((node: any, prevNode: any) => {
     setHoveredNode(node || null);
   }, []);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleNodeClick = useCallback((node: any) => {
     // Notify parent so it can open the detail drawer
     onNodeSelect?.(node.id);
@@ -222,6 +227,7 @@ export const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   // Stable function refs for ForceGraph2D — prevents simulation restarts on parent re-renders.
   const nodeCanvasObjectModeFn = useCallback(() => "replace", []);
   const nodeLabelFn = useCallback(() => "", []);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const linkColorFn = useCallback((link: any) => {
     if (selectedRingMembers
       && selectedRingMembers.has(link.source?.id || link.source)
@@ -230,6 +236,7 @@ export const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     }
     return "rgba(100,255,150,0.12)";
   }, [selectedRingMembers]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const linkWidthFn = useCallback((link: any) => {
     if (selectedRingMembers
       && selectedRingMembers.has(link.source?.id || link.source)

@@ -95,44 +95,57 @@ serve(async (req) => {
 - Processing time: ${context.processing_time_ms ? (context.processing_time_ms / 1000).toFixed(2) + 's' : 'N/A'}
 
 TOP SUSPICIOUS ACCOUNTS:
-${(context.top_suspects || []).map((a: any) =>
+${(context.top_suspects || []).map((a: { id: string; score: number; reasons: string[] }) =>
   `  • ${a.id}: Score ${a.score}/100 — ${(a.reasons || []).join(', ')}`
 ).join('\n') || '  None'}
 
 DETECTED FRAUD RINGS:
-${(context.fraud_rings || []).map((r: any) =>
+${(context.fraud_rings || []).map((r: { id: string; type?: string; members: number; accounts: string[] }) =>
   `  • ${r.id} (${r.type?.replace(/_/g, ' ')}): ${r.members} accounts — ${(r.accounts || []).join(', ')}...`
 ).join('\n') || '  None'}
 
 SMURFING DETAIL:
-Fan-in (many→one): ${(context.smurfing_detail?.fanIn || []).map((fi: any) => `${fi.receiver} ← ${fi.count} senders`).join(', ') || 'None'}
-Fan-out (one→many): ${(context.smurfing_detail?.fanOut || []).map((fo: any) => `${fo.sender} → many`).join(', ') || 'None'}`;
+Fan-in (many→one): ${(context.smurfing_detail?.fanIn || []).map((fi: { receiver: string; count: number }) => `${fi.receiver} ← ${fi.count} senders`).join(', ') || 'None'}
+Fan-out (one→many): ${(context.smurfing_detail?.fanOut || []).map((fo: { sender: string; count: number }) => `${fo.sender} → many`).join(', ') || 'None'}`;
     }
 
-    const systemPrompt = `You are an expert AI assistant for the "Money Muling Detection Engine" — a real-time financial crime analysis platform for fraud investigators.
+    const systemPrompt = `You are "CyberShield AI", an expert financial forensics assistant for the Money Muling Detection Engine.
+Your goal is to help fraud investigators analyze suspicious transaction patterns.
 
-LANGUAGE RULE: You MUST respond ONLY in ${langName}. Regardless of what language the user speaks, your entire response must be in ${langName}.
+STRICT LANGUAGE RULE: 
+- Current Target Language: ${langName}
+- You MUST respond ENTIRELY in ${langName}. 
+- Do NOT use English even for technical terms if an equivalent exists in ${langName}.
+- If the user asks a question in English, you MUST still answer in ${langName}.
+- NEVER switch back to English unless the Target Language is specifically set to English.
 
-FRAUD DETECTION CONCEPTS YOU KNOW:
-- Money Muling: Using innocent-seeming accounts to move illicit funds.
-- Cycle Detection: Accounts that form circular money flows (A→B→C→A) to obscure the origin of funds.
-- Smurfing (Fan-in): 10+ senders sending to a single receiver in 72 hours — indicates money aggregation.
-- Smurfing (Fan-out): A single sender distributing to 10+ receivers — indicates money dispersal.
-- Shell Account Chains: Layered accounts with only 2–3 transactions, used to obfuscate the trail.
-- Suspicion Scoring: Weighted system — Cycle participation +40, Fan-in/out +30, High velocity +20, Shell account +10. False positives (payroll-like, regular daily patterns) are reduced.
+FRAUD DETECTION KNOWLEDGE:
+- Money Muling: Moving illicit funds through multiple accounts.
+- Cycle Detection: A → B → C → A loops used for money laundering.
+- Smurfing (Fan-in): Many small deposits into one account (aggregation).
+- Smurfing (Fan-out): One account distributing small amounts to many (dispersal).
+- Shell Account Chains: Short-lived accounts with low activity, used as layers.
+- Suspicion Scoring: High score (70-100) indicates high risk of fraud.
 
-CURRENT SCREEN CONTEXT:
+CURRENT SCREEN: ${screen.toUpperCase()}
 ${screenContext}
 
-CURRENT ANALYSIS DATA:
+ANALYSIS DATA SUMMARY:
 ${dataContext}
 
-RESPONSE RULES:
-1. Keep responses SHORT (2-4 sentences) — optimized for voice output.
-2. Be specific when data is available — mention exact account IDs, scores, ring IDs.
-3. For technical questions, give a simple explanation first, then details.
-4. Always respond in ${langName} — even if the user writes in English or another language.
-5. Be helpful, professional, and clear. Avoid jargon unless explaining it.`;
+RESPONSE STYLE:
+1. Keep it professional, concise, and helpful.
+2. Limit response to 2-4 sentences for clear voice output.
+3. Be specific: mention Account IDs, Score, and Ring IDs when available.
+4. Always maintain the persona of a high-tech forensic tool.
+5. ALWAYS respond in ${langName}.`;
+
+    const wrappedMessage = `The user says: "${safeMessage}"
+
+REMINDER: You are currently configured for ${langName}. 
+Your entire response MUST be in ${langName}. 
+If the user's query is in a different language, translate the intent and respond ONLY in ${langName}.
+Respond naturally as a voice assistant.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -141,12 +154,13 @@ RESPONSE RULES:
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.0-flash-exp",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: safeMessage },
+          { role: "user", content: wrappedMessage },
         ],
-        max_tokens: 350,
+        max_tokens: 450,
+        temperature: 0.3,
       }),
     });
 
@@ -167,7 +181,8 @@ RESPONSE RULES:
     }
 
     const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || "I'm sorry, I couldn't process that request.";
+    const reply = data.choices?.[0]?.message?.content;
+    if (!reply) throw new Error("empty_response");
 
     return new Response(JSON.stringify({ reply }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
