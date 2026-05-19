@@ -9,14 +9,9 @@ const corsHeaders = {
 const languageMap: Record<string, string> = {
   en: "English",
   hi: "Hindi",
+  kn: "Kannada",
   te: "Telugu",
   ta: "Tamil",
-  kn: "Kannada",
-  ml: "Malayalam",
-  mr: "Marathi",
-  bn: "Bengali",
-  gu: "Gujarati",
-  pa: "Punjabi",
 };
 
 function jsonResponse(body: Record<string, unknown>, status = 200) {
@@ -112,19 +107,21 @@ Fan-out (one→many): ${(context.smurfing_detail?.fanOut || []).map((fo: { sende
     const systemPrompt = `You are "CyberShield AI", an expert financial forensics assistant for the Money Muling Detection Engine.
 Your goal is to help fraud investigators analyze suspicious transaction patterns.
 
-STRICT LANGUAGE RULE: 
-- Current Target Language: ${langName}
-- You MUST respond ENTIRELY in ${langName}. 
-- Do NOT use English even for technical terms if an equivalent exists in ${langName}.
-- If the user asks a question in English, you MUST still answer in ${langName}.
-- NEVER switch back to English unless the Target Language is specifically set to English.
+STRICT LANGUAGE RULE:
+- Configured Language: ${langName}
+- You MUST respond ENTIRELY in ${langName} — no exceptions.
+- Do NOT mix languages. Do NOT include any words from other languages unless they are proper nouns (e.g. account IDs).
+- If the user's question is in a different language, detect the intent and answer ONLY in ${langName}.
+- Respond in clear, natural, standard ${langName} script (e.g., Devanagari for Hindi, Kannada script for Kannada, Telugu script for Telugu, Tamil script for Tamil).
+- For technical terms, you can use the English term in brackets if helpful — e.g. "संदिग्ध खाता (Suspicious Account)" or "ವಂಚನೆ ಜಾಲ (Fraud Ring)".
+- Be brief and direct for high-performance voice output.`;
 
 FRAUD DETECTION KNOWLEDGE:
 - Money Muling: Moving illicit funds through multiple accounts.
 - Cycle Detection: A → B → C → A loops used for money laundering.
 - Smurfing (Fan-in): Many small deposits into one account (aggregation).
 - Smurfing (Fan-out): One account distributing small amounts to many (dispersal).
-- Shell Account Chains: Short-lived accounts with low activity, used as layers.
+- Shell Account Chains: Short-lived accounts with low activity, used as laundering layers.
 - Suspicion Scoring: High score (70-100) indicates high risk of fraud.
 
 CURRENT SCREEN: ${screen.toUpperCase()}
@@ -134,18 +131,17 @@ ANALYSIS DATA SUMMARY:
 ${dataContext}
 
 RESPONSE STYLE:
-1. Keep it professional, concise, and helpful.
-2. Limit response to 2-4 sentences for clear voice output.
-3. Be specific: mention Account IDs, Score, and Ring IDs when available.
-4. Always maintain the persona of a high-tech forensic tool.
-5. ALWAYS respond in ${langName}.`;
+1. Keep it professional, concise, and helpful — ideal for voice playback.
+2. Limit response to 2-4 short sentences.
+3. Mention Account IDs, Scores, and Ring IDs when the data is available.
+4. Maintain the persona of a high-tech forensic AI tool.
+5. ALWAYS respond in ${langName} only.`;
 
-    const wrappedMessage = `The user says: "${safeMessage}"
+    const wrappedMessage = `User query: "${safeMessage}"
 
-REMINDER: You are currently configured for ${langName}. 
-Your entire response MUST be in ${langName}. 
-If the user's query is in a different language, translate the intent and respond ONLY in ${langName}.
-Respond naturally as a voice assistant.`;
+⚠️ FINAL REMINDER: Your language is strictly set to ${langName}.
+Do NOT respond in any other language under any circumstances.
+Respond naturally as a voice assistant — keep it concise (2-4 sentences) and in ${langName} only.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

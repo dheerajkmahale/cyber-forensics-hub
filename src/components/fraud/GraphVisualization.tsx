@@ -19,6 +19,7 @@ interface GraphVisualizationProps {
   privacyMode?: boolean;
   currentTime?: number; // ms epoch — only edges with timestamp <= currentTime are "active"
   onNodeSelect?: (accountId: string) => void;
+  frozenAccounts?: Set<string>;
 }
 
 type FilterMode = "all" | "suspicious" | "cycles" | "smurfing";
@@ -31,6 +32,7 @@ export const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   privacyMode = true,
   currentTime,
   onNodeSelect,
+  frozenAccounts = new Set(),
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -130,6 +132,7 @@ export const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         rings: ringMemberMap.get(n.id) || [],
         timeActive: !timeActive || activeNodeIds.has(n.id),
         val: n.suspicious ? Math.max(2, n.score / 20) : 1,
+        isFrozen: frozenAccounts.has(n.id),
       })),
       links: visibleEdges.map(e => ({
         source: e.source,
@@ -138,7 +141,7 @@ export const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         transaction_id: e.transaction_id,
       })),
     };
-  }, [filteredNodes, filteredEdges, ringMemberMap, currentTime]);
+  }, [filteredNodes, filteredEdges, ringMemberMap, currentTime, frozenAccounts]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const nodeCanvasObject = useCallback((node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
@@ -175,17 +178,50 @@ export const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     // Main node circle
     ctx.beginPath();
     ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
-    ctx.fillStyle = ringColor
-      ? ringColor
-      : node.suspicious
-        ? node.score >= 70 ? "hsl(0,84%,60%)" : node.score >= 40 ? "hsl(45,100%,55%)" : "hsl(210,100%,60%)"
-        : "hsl(155,100%,35%)";
+    
+    if (node.isFrozen) {
+      ctx.fillStyle = "hsl(185, 80%, 25%)"; // Frozen deep slate cyan
+    } else {
+      ctx.fillStyle = ringColor
+        ? ringColor
+        : node.suspicious
+          ? node.score >= 70 ? "hsl(0,84%,60%)" : node.score >= 40 ? "hsl(45,100%,55%)" : "hsl(210,100%,60%)"
+          : "hsl(155,100%,35%)";
+    }
     ctx.fill();
+
+    // Draw Lock Icon Overlay for frozen accounts
+    if (node.isFrozen && !isTimeInactive) {
+      ctx.save();
+      ctx.fillStyle = "hsl(185, 100%, 50%)"; // Neon cyan lock
+      
+      // Draw a tiny padlock shape
+      const w = 5;
+      const h = 4;
+      const lx = node.x - w / 2;
+      const ly = node.y - h / 3;
+      
+      // Padlock shackle
+      ctx.beginPath();
+      ctx.arc(node.x, ly, w / 2.5, Math.PI, 0);
+      ctx.lineWidth = 1.2 / globalScale;
+      ctx.strokeStyle = "hsl(185, 100%, 50%)";
+      ctx.stroke();
+      
+      // Padlock body
+      ctx.beginPath();
+      ctx.rect(lx, ly, w, h);
+      ctx.fill();
+      ctx.restore();
+    }
 
     // Border: thick highlight for ring members, normal otherwise
     if (isInSelectedRing) {
-      ctx.strokeStyle = "white";
+      ctx.strokeStyle = node.isFrozen ? "hsl(185, 100%, 50%)" : "white";
       ctx.lineWidth = 2.5 / globalScale;
+    } else if (node.isFrozen) {
+      ctx.strokeStyle = "hsl(185, 100%, 50%)"; // Neon cyan border
+      ctx.lineWidth = 1.8 / globalScale;
     } else if (node.suspicious) {
       ctx.strokeStyle = "rgba(255,255,255,0.5)";
       ctx.lineWidth = 1 / globalScale;
@@ -200,12 +236,16 @@ export const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       ctx.font = `${fontSize}px JetBrains Mono, monospace`;
       ctx.textAlign = "center";
       ctx.textBaseline = "top";
-      ctx.fillStyle = "rgba(220,255,220,0.9)";
-      ctx.fillText(label.length > 9 ? label.slice(0, 9) + "…" : label, node.x, node.y + r + 2);
+      ctx.fillStyle = node.isFrozen ? "hsl(185, 100%, 65%)" : "rgba(220,255,220,0.9)";
+      ctx.fillText(
+        (node.isFrozen ? "🔒 " : "") + (label.length > 9 ? label.slice(0, 9) + "…" : label),
+        node.x,
+        node.y + r + 2
+      );
     }
 
     ctx.globalAlpha = 1;
-  }, [selectedRingMembers, ringColorMap, privacyMode]);
+  }, [selectedRingMembers, ringColorMap, privacyMode, frozenAccounts]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleNodeHover = useCallback((node: any, prevNode: any) => {

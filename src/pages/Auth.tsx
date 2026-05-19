@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -72,10 +71,15 @@ const Auth: React.FC = () => {
 
   const handleGoogle = async () => {
     setLoading(true);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
     setLoading(false);
-    if (result.error) {
-      toast({ title: "Google sign-in failed", description: String(result.error.message ?? result.error), variant: "destructive" });
+    if (error) {
+      toast({ title: "Google sign-in failed", description: error.message, variant: "destructive" });
     }
   };
 

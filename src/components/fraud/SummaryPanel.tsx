@@ -9,7 +9,24 @@ interface SummaryPanelProps {
 }
 
 export const SummaryPanel: React.FC<SummaryPanelProps> = ({ result, privacyMode = true }) => {
-  const { summary, suspicious_accounts, fraud_rings, smurfing, shell_chains } = result;
+  // Destructure safely, providing complete fallback fields to tolerate incomplete simulation shapes
+  const suspicious_accounts = result?.suspicious_accounts || [];
+  const fraud_rings = result?.fraud_rings || [];
+  const smurfing = result?.smurfing || { fanIn: [], fanOut: [] };
+  const shell_chains = result?.shell_chains || [];
+  const summary = {
+    total_transactions: result?.summary?.total_transactions || 0,
+    total_accounts: result?.summary?.total_accounts || 0,
+    suspicious_accounts_count: result?.summary?.suspicious_accounts_count || 0,
+    fraud_rings_detected: result?.summary?.fraud_rings_detected || 0,
+    smurfing_fan_in_detected: result?.summary?.smurfing_fan_in_detected || 0,
+    smurfing_fan_out_detected: result?.summary?.smurfing_fan_out_detected || 0,
+    shell_chains_detected: result?.summary?.shell_chains_detected || 0,
+    analysis_timestamp: result?.summary?.analysis_timestamp || new Date().toISOString(),
+  };
+
+  const fanInList = smurfing?.fanIn || [];
+  const fanOutList = smurfing?.fanOut || [];
 
   const handleDownload = () => {
     const exportData = {
@@ -26,8 +43,8 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({ result, privacyMode 
       })),
       summary: {
         ...summary,
-        smurfing_fan_in: smurfing.fanIn.map(fi => ({ receiver: privacyMode ? maskSensitiveValue(fi.receiver) : fi.receiver, sender_count: fi.count })),
-        smurfing_fan_out: smurfing.fanOut.map(fo => ({ sender: privacyMode ? maskSensitiveValue(fo.sender) : fo.sender, receiver_count: fo.count })),
+        smurfing_fan_in: fanInList.map(fi => ({ receiver: privacyMode ? maskSensitiveValue(fi.receiver) : fi.receiver, sender_count: fi.count })),
+        smurfing_fan_out: fanOutList.map(fo => ({ sender: privacyMode ? maskSensitiveValue(fo.sender) : fo.sender, receiver_count: fo.count })),
         shell_chains_sample: shell_chains.slice(0, 10).map(chain => ({ chain: privacyMode ? chain.map(maskSensitiveValue) : chain })),
       },
     };
@@ -94,18 +111,18 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({ result, privacyMode 
       </div>
 
       {/* Smurfing alerts */}
-      {(smurfing.fanIn.length > 0 || smurfing.fanOut.length > 0) && (
+      {(fanInList.length > 0 || fanOutList.length > 0) && (
         <div className="p-3 rounded-md border bg-card/30" style={{ borderColor: "hsl(45 100% 55% / 0.4)" }}>
           <p className="text-xs font-mono font-bold mb-2" style={{ color: "hsl(45 100% 55%)" }}>
             ⚠ SMURFING PATTERNS DETECTED
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {smurfing.fanIn.slice(0, 3).map(fi => (
+            {fanInList.slice(0, 3).map(fi => (
               <div key={fi.receiver} className="text-xs font-mono text-muted-foreground">
                 FAN-IN: <span className="text-foreground">{privacyMode ? maskSensitiveValue(fi.receiver) : fi.receiver}</span> ← {fi.count} senders
               </div>
             ))}
-            {smurfing.fanOut.slice(0, 3).map(fo => (
+            {fanOutList.slice(0, 3).map(fo => (
               <div key={fo.sender} className="text-xs font-mono text-muted-foreground">
                 FAN-OUT: <span className="text-foreground">{privacyMode ? maskSensitiveValue(fo.sender) : fo.sender}</span> → {fo.count} receivers
               </div>

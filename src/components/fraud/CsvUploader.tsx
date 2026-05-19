@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Upload, FileText, AlertCircle, CheckCircle } from "lucide-react";
+import { Upload, FileText, AlertCircle, CheckCircle, Download } from "lucide-react";
 import { Transaction } from "@/types/fraud";
 import { isSafeIdentifier, sanitizeCsvCell } from "@/lib/privacy";
 
@@ -183,6 +183,17 @@ export const CsvUploader: React.FC<CsvUploaderProps> = ({ onUpload, isLoading })
               <p className="text-xs font-mono text-muted-foreground/50 mt-0.5">
                 TX001,ACC001,ACC002,5000.00,2024-01-15T10:30:00Z
               </p>
+              <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-border/20">
+                <p className="text-[11px] font-mono text-muted-foreground/50">Need a valid test dataset?</p>
+                <a
+                  href="/sample_transactions.csv"
+                  download="sample_transactions.csv"
+                  className="flex items-center gap-1.5 text-[11px] font-mono hover:underline transition-colors"
+                  style={{ color: "hsl(155, 100%, 50%)" }}
+                >
+                  <Download className="w-3.5 h-3.5" /> Download Sample CSV
+                </a>
+              </div>
             </div>
           </div>
         </div>

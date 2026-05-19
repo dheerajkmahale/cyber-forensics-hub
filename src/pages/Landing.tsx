@@ -5,7 +5,6 @@ import MatrixRain from "@/components/MatrixRain";
 import CyberShieldLogo from "@/components/CyberShieldLogo";
 import { TerminalWidget } from "@/components/TerminalWidget";
 import FeatureCard from "@/components/FeatureCard";
-import { VoiceAssistant } from "@/components/fraud/VoiceAssistant";
 import {
   Shield,
   Cpu,
@@ -418,7 +417,7 @@ const Landing: React.FC = () => {
     { label: "Transactions Processed", value: 10000, suffix: "+", icon: Activity },
     { label: "Detection Accuracy", value: 98, suffix: "%", icon: Eye },
     { label: "Analysis Time", value: 30, suffix: "s", icon: Zap },
-    { label: "Supported Languages", value: 10, suffix: "", icon: Globe },
+    { label: "Supported Languages", value: 2, suffix: "", icon: Globe },
   ];
 
   const capabilities = [
@@ -451,32 +450,12 @@ const Landing: React.FC = () => {
       badge: "SCORE",
     },
     {
-      icon: Mic,
-      title: "AI Voice Assistant",
-      description:
-        "Multilingual real-time voice assistant supporting 10 Indian languages — ask questions, get fraud explanations, and navigate by voice.",
-      badge: "AI",
-    },
-    {
       icon: Download,
       title: "JSON Export",
       description:
         "One-click export of the complete analysis report in structured JSON format: suspicious accounts, fraud rings, and full summary.",
       badge: "EXPORT",
     },
-  ];
-
-  const voiceLanguages = [
-    "English", "हिन्दी", "తెలుగు", "தமிழ்", "ಕನ್ನಡ",
-    "മലയാളം", "मराठी", "বাংলা", "ગુજરાતી", "ਪੰਜਾਬੀ",
-  ];
-
-  const terminalLines = [
-    { prefix: "[SYS]", text: "Money Muling Detection Engine v2.4.1 initialized" },
-    { prefix: "[NET]", text: "Graph construction module: ACTIVE" },
-    { prefix: "[AML]", text: "Fraud detection algorithms: LOADED" },
-    { prefix: "[AI ]", text: "Multilingual voice assistant: ONLINE" },
-    { prefix: "[OK ]", text: "System ready. Upload CSV to begin analysis." },
   ];
 
   return (
@@ -573,7 +552,7 @@ const Landing: React.FC = () => {
         </div>
 
         <div className="hidden md:flex items-center gap-8">
-          {["Features", "How It Works", "Languages", "Terminal"].map((item) => (
+          {["Features", "How It Works", "Terminal"].map((item) => (
             <button
               key={item}
               onClick={() => {
@@ -1090,61 +1069,6 @@ const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* ─────────── LANGUAGES ─────────── */}
-      <section id="languages" data-section="languages" className="relative z-10 py-20 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <span className="text-xs font-mono tracking-widest text-muted-foreground border border-border/40 px-3 py-1 rounded-full">
-            // MULTILINGUAL AI
-          </span>
-          <h2
-            className="text-3xl md:text-4xl font-black mt-4 mb-3"
-            style={{ fontFamily: "Orbitron, monospace", color: "hsl(155 100% 50%)" }}
-          >
-            VOICE IN YOUR LANGUAGE
-          </h2>
-          <p className="text-sm font-mono text-muted-foreground mb-10 max-w-md mx-auto">
-            The AI voice assistant understands and speaks 10 Indian languages. Switch at any time from the floating mic panel.
-          </p>
-
-          <div className="flex flex-wrap justify-center gap-3 mb-10">
-            {voiceLanguages.map((lang, i) => (
-              <div
-                key={lang}
-                className="px-4 py-2 rounded border font-mono text-sm transition-all duration-200 hover:scale-105"
-                style={{
-                  borderColor: i === 0 ? "hsl(155 100% 50%)" : "hsl(155 60% 20%)",
-                  background: i === 0 ? "hsl(155 100% 50% / 0.1)" : "hsl(220 20% 7%)",
-                  color: i === 0 ? "hsl(155 100% 50%)" : "hsl(150 30% 55%)",
-                }}
-              >
-                {lang}
-              </div>
-            ))}
-          </div>
-
-          {/* Voice feature pills */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-w-2xl mx-auto text-left">
-            {[
-              { cmd: '"Upload file"', desc: "Triggers file upload dialog" },
-              { cmd: '"Show suspicious accounts"', desc: "Navigates to fraud table" },
-              { cmd: '"Explain this fraud ring"', desc: "AI explains detected rings" },
-              { cmd: '"Download JSON report"', desc: "Exports analysis results" },
-              { cmd: '"Switch language to Hindi"', desc: "Changes assistant language" },
-              { cmd: '"What is smurfing?"', desc: "Financial crime education" },
-            ].map(({ cmd, desc }) => (
-              <div
-                key={cmd}
-                className="p-3 rounded border text-xs font-mono"
-                style={{ borderColor: "hsl(155 60% 20%)", background: "hsl(220 20% 7%)" }}
-              >
-                <span style={{ color: "hsl(155 100% 50%)" }}>{cmd}</span>
-                <span className="block text-muted-foreground mt-1">{desc}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ─────────── TERMINAL ─────────── */}
       <section id="terminal" data-section="terminal" className="relative z-10 py-20 px-6">
         <div className="max-w-2xl mx-auto">
@@ -1223,7 +1147,6 @@ const Landing: React.FC = () => {
         </p>
       </footer>
 
-      <VoiceAssistant analysisResult={null} />
     </div>
   );
 };

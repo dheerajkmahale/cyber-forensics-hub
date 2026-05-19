@@ -7,6 +7,8 @@ interface FraudTableProps {
   suspiciousAccounts: SuspiciousAccount[];
   fraudRings: FraudRing[];
   privacyMode?: boolean;
+  onFreezeAccount?: (id: string) => void;
+  frozenAccounts?: Set<string>;
 }
 
 // ---- Score Badge ----
@@ -160,16 +162,29 @@ const RingsTable: React.FC<{ fraudRings: FraudRing[]; privacyMode: boolean }> = 
 };
 
 // ---- Accounts Table ----
-type AccCol = "idx" | "account_id" | "score" | "reasons";
+type AccCol = "idx" | "account_id" | "score" | "reasons" | "actions";
 const ACC_COL_LABELS: Record<AccCol, string> = {
-  idx: "#", account_id: "ACCOUNT ID", score: "SCORE", reasons: "FLAGS",
+  idx: "#", account_id: "ACCOUNT ID", score: "SCORE", reasons: "FLAGS", actions: "MITIGATION",
 };
 
-const AccountsTable: React.FC<{ suspiciousAccounts: SuspiciousAccount[]; privacyMode: boolean }> = ({ suspiciousAccounts, privacyMode }) => {
+interface AccountsTableProps {
+  suspiciousAccounts: SuspiciousAccount[];
+  privacyMode: boolean;
+  onFreezeAccount?: (id: string) => void;
+  frozenAccounts?: Set<string>;
+}
+
+const AccountsTable: React.FC<AccountsTableProps> = ({
+  suspiciousAccounts,
+  privacyMode,
+  onFreezeAccount,
+  frozenAccounts = new Set(),
+}) => {
   const [sortCol, setSortCol] = useState<AccCol>("score");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
 
   const handleSort = (col: AccCol) => {
+    if (col === "actions" || col === "reasons" || col === "idx") return;
     if (sortCol === col) {
       setSortDir(d => d === "desc" ? "asc" : d === "asc" ? null : "desc");
     } else {
@@ -179,7 +194,7 @@ const AccountsTable: React.FC<{ suspiciousAccounts: SuspiciousAccount[]; privacy
   };
 
   const sorted = useMemo(() => {
-    if (!sortDir || sortCol === "idx" || sortCol === "reasons") return suspiciousAccounts;
+    if (!sortDir || sortCol === "idx" || sortCol === "reasons" || sortCol === "actions") return suspiciousAccounts;
     return [...suspiciousAccounts].sort((a, b) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const va: any = sortCol === "score" ? a.score : a.account_id;
@@ -204,41 +219,73 @@ const AccountsTable: React.FC<{ suspiciousAccounts: SuspiciousAccount[]; privacy
       <table className="w-full text-xs font-mono">
         <thead>
           <tr className="border-b border-border/50">
-            {(["idx", "account_id", "score", "reasons"] as AccCol[]).map(col => (
+            {(["idx", "account_id", "score", "reasons", "actions"] as AccCol[]).map(col => (
               <th
                 key={col}
-                className={`text-left py-2 px-3 text-muted-foreground font-normal tracking-wider ${col !== "reasons" && col !== "idx" ? "cursor-pointer hover:text-foreground select-none" : ""}`}
-                onClick={() => col !== "reasons" && col !== "idx" && handleSort(col)}
+                className={`text-left py-2 px-3 text-muted-foreground font-normal tracking-wider ${col !== "reasons" && col !== "idx" && col !== "actions" ? "cursor-pointer hover:text-foreground select-none" : ""}`}
+                onClick={() => col !== "reasons" && col !== "idx" && col !== "actions" && handleSort(col)}
               >
                 <span className="flex items-center">
                   {ACC_COL_LABELS[col]}
-                  {col !== "reasons" && col !== "idx" && <SortIcon dir={sortCol === col ? sortDir : null} />}
+                  {col !== "reasons" && col !== "idx" && col !== "actions" && <SortIcon dir={sortCol === col ? sortDir : null} />}
                 </span>
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {sorted.map((account, i) => (
-            <tr key={account.account_id} className="border-b border-border/20 hover:bg-primary/5 transition-colors">
-              <td className="py-2 px-3 text-muted-foreground/60">{i + 1}</td>
-              <td className="py-2 px-3 text-foreground font-bold">{privacyMode ? maskSensitiveValue(account.account_id) : account.account_id}</td>
-              <td className="py-2 px-3"><ScoreBadge score={account.score} /></td>
-              <td className="py-2 px-3">
-                <div className="flex flex-wrap gap-1">
-                  {account.reasons.map((r, ri) => (
-                    <span
-                      key={ri}
-                      className="px-1.5 py-0.5 rounded text-muted-foreground bg-muted/30 border border-border/30"
-                      style={{ fontSize: "10px" }}
-                    >
-                      {r}
+          {sorted.map((account, i) => {
+            const isFrozen = frozenAccounts.has(account.account_id);
+            return (
+              <tr key={account.account_id} className={`border-b border-border/20 hover:bg-primary/5 transition-colors ${isFrozen ? "bg-slate-900/40 opacity-70" : ""}`}>
+                <td className="py-2 px-3 text-muted-foreground/60">{i + 1}</td>
+                <td className="py-2 px-3 font-bold flex items-center gap-1.5">
+                  {isFrozen ? (
+                    <span className="text-emerald-500 text-[10px] animate-pulse">🔒 [FROZEN]</span>
+                  ) : null}
+                  <span className={isFrozen ? "text-muted-foreground line-through decoration-emerald-800" : "text-foreground"}>
+                    {privacyMode ? maskSensitiveValue(account.account_id) : account.account_id}
+                  </span>
+                </td>
+                <td className="py-2 px-3">
+                  {isFrozen ? (
+                    <span className="text-[10px] text-muted-foreground bg-emerald-950/20 border border-emerald-900/30 px-2 py-0.5 rounded">
+                      MUTED
                     </span>
-                  ))}
-                </div>
-              </td>
-            </tr>
-          ))}
+                  ) : (
+                    <ScoreBadge score={account.score} />
+                  )}
+                </td>
+                <td className="py-2 px-3">
+                  <div className="flex flex-wrap gap-1">
+                    {account.reasons.map((r, ri) => (
+                      <span
+                        key={ri}
+                        className="px-1.5 py-0.5 rounded text-muted-foreground bg-muted/30 border border-border/30"
+                        style={{ fontSize: "10px" }}
+                      >
+                        {r}
+                      </span>
+                    ))}
+                  </div>
+                </td>
+                <td className="py-2 px-3">
+                  {isFrozen ? (
+                    <span className="text-emerald-400 font-bold text-[10px] tracking-widest bg-emerald-950/30 border border-emerald-500/40 px-2 py-1 rounded">
+                      ASSETS LOCKED
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => onFreezeAccount?.(account.account_id)}
+                      className="px-2.5 py-1 text-[10px] font-bold rounded border border-rose-500/50 text-rose-400 bg-rose-950/15 hover:bg-rose-500 hover:text-black transition-all"
+                    >
+                      FREEZE ASSETS
+                    </button>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
@@ -246,7 +293,13 @@ const AccountsTable: React.FC<{ suspiciousAccounts: SuspiciousAccount[]; privacy
 };
 
 // ---- Main Component ----
-export const FraudTable: React.FC<FraudTableProps> = ({ suspiciousAccounts, fraudRings, privacyMode = true }) => {
+export const FraudTable: React.FC<FraudTableProps> = ({
+  suspiciousAccounts,
+  fraudRings,
+  privacyMode = true,
+  onFreezeAccount,
+  frozenAccounts,
+}) => {
   const [activeTab, setActiveTab] = useState<"accounts" | "rings">("accounts");
 
   return (
@@ -270,7 +323,14 @@ export const FraudTable: React.FC<FraudTableProps> = ({ suspiciousAccounts, frau
         ))}
       </div>
 
-      {activeTab === "accounts" && <AccountsTable suspiciousAccounts={suspiciousAccounts} privacyMode={privacyMode} />}
+      {activeTab === "accounts" && (
+        <AccountsTable
+          suspiciousAccounts={suspiciousAccounts}
+          privacyMode={privacyMode}
+          onFreezeAccount={onFreezeAccount}
+          frozenAccounts={frozenAccounts}
+        />
+      )}
       {activeTab === "rings" && <RingsTable fraudRings={fraudRings} privacyMode={privacyMode} />}
     </div>
   );

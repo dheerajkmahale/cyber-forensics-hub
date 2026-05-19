@@ -6,19 +6,17 @@ export interface LanguageConfig {
 
 export const LANGUAGES: LanguageConfig[] = [
   { code: "en", label: "English", voice: "en-IN" },
-  { code: "hi", label: "Hindi", voice: "hi-IN" },
-  { code: "te", label: "Telugu", voice: "te-IN" },
-  { code: "ta", label: "Tamil", voice: "ta-IN" },
-  { code: "kn", label: "Kannada", voice: "kn-IN" }
+  { code: "hi", label: "Hindi",   voice: "hi-IN" },
 ];
 
 export const VOICE_UI_TRANSLATIONS: Record<string, Record<string, string>> = {
   en: {
+    // Status
     ready: "Ready",
     listening: "Listening...",
     processing: "Processing...",
     speaking: "Speaking...",
-    pressMic: "Press the mic and ask:",
+    pressMic: "Press the mic or click a suggestion:",
     stop: "STOP",
     speak: "SPEAK",
     demo: "DEMO WALKTHROUGH",
@@ -26,25 +24,40 @@ export const VOICE_UI_TRANSLATIONS: Record<string, Record<string, string>> = {
     error: "Sorry, I encountered an error. Please try again.",
     noProcess: "I couldn't process that. Please try again.",
     analysisComplete: "Analysis complete. Found {suspicious} suspicious accounts and {rings} fraud rings across {total} total accounts.",
+    // Upload screen quick commands
     quickCsvFormat: "CSV format?",
     quickHowToUpload: "How to upload?",
-    quickColumns: "What columns are needed?",
+    quickColumns: "Required columns?",
+    quickMaxRows: "Max file size?",
+    quickSampleData: "Show sample CSV row",
+    // Graph screen quick commands
     quickExplainNodes: "Explain suspicious nodes",
+    quickWhatAreRings: "What are fraud rings?",
+    quickShowSmurfing: "Explain smurfing patterns",
+    quickHowToFilter: "How to filter the graph?",
+    quickWhatRedMeans: "What does red mean?",
+    // Summary screen quick commands
     quickSummarize: "Summarize findings",
-    quickFanIn: "What is fan-in pattern?",
+    quickFanIn: "What is fan-in smurfing?",
     quickHowManyRings: "How many fraud rings?",
+    quickTopSuspect: "Who is most suspicious?",
+    quickShellChains: "What are shell chains?",
+    // Demo steps
     demoStep1: "Introduce this Money Muling Detection Engine app.",
     demoStep2: "Explain how fraud detection algorithms work here.",
     demoStep3_result: "Highlight the top suspicious accounts found.",
     demoStep3_noResult: "How do I upload a CSV file for analysis?",
     demoStep4: "Demonstrate your multilingual support by saying hello in {lang}.",
+    // Suggested phrases label
+    suggestions: "Suggestions",
   },
   hi: {
+    // Status
     ready: "तैयार",
     listening: "सुन रहा हूँ...",
     processing: "प्रसंस्करण हो रहा है...",
     speaking: "बोल रहा हूँ...",
-    pressMic: "माइक दबाएं और पूछें:",
+    pressMic: "माइक दबाएं या सुझाव चुनें:",
     stop: "रुकें",
     speak: "बोलें",
     demo: "डेमो वॉकथ्रू",
@@ -52,97 +65,33 @@ export const VOICE_UI_TRANSLATIONS: Record<string, Record<string, string>> = {
     error: "क्षमा करें, एक त्रुटि हुई। कृपया पुनः प्रयास करें।",
     noProcess: "मैं उसे समझ नहीं सका। कृपया पुनः प्रयास करें।",
     analysisComplete: "विश्लेषण पूरा हुआ। {total} खातों में से {suspicious} संदिग्ध खाते और {rings} धोखाधड़ी रिंग मिले।",
+    // Upload screen quick commands
     quickCsvFormat: "CSV प्रारूप?",
     quickHowToUpload: "कैसे अपलोड करें?",
     quickColumns: "कौन से कॉलम चाहिए?",
+    quickMaxRows: "अधिकतम फ़ाइल आकार?",
+    quickSampleData: "नमूना CSV पंक्ति दिखाएं",
+    // Graph screen quick commands
     quickExplainNodes: "संदिग्ध नोड्स समझाएं",
+    quickWhatAreRings: "धोखाधड़ी रिंग क्या हैं?",
+    quickShowSmurfing: "स्मर्फिंग पैटर्न समझाएं",
+    quickHowToFilter: "ग्राफ को फ़िल्टर कैसे करें?",
+    quickWhatRedMeans: "लाल रंग का क्या मतलब है?",
+    // Summary screen quick commands
     quickSummarize: "निष्कर्षों का सारांश दें",
-    quickFanIn: "फैन-इन पैटर्न क्या है?",
+    quickFanIn: "फैन-इन स्मर्फिंग क्या है?",
     quickHowManyRings: "कितने धोखाधड़ी रिंग हैं?",
+    quickTopSuspect: "सबसे संदिग्ध खाता कौन सा है?",
+    quickShellChains: "शेल चेन क्या होते हैं?",
+    // Demo steps
     demoStep1: "इस मनी म्यूलिंग डिटेक्शन इंजन ऐप का परिचय दें।",
     demoStep2: "समझाएं कि यहां धोखाधड़ी का पता लगाने वाले एल्गोरिदम कैसे काम करते हैं।",
     demoStep3_result: "शीर्ष संदिग्ध खातों को हाइलाइट करें।",
     demoStep3_noResult: "मैं विश्लेषण के लिए CSV फ़ाइल कैसे अपलोड करूँ?",
     demoStep4: "{lang} में नमस्ते कहकर अपने बहुभाषी समर्थन का प्रदर्शन करें।",
+    // Suggested phrases label
+    suggestions: "सुझाव",
   },
-  te: {
-    ready: "సిద్ధం",
-    listening: "వింటున్నాను...",
-    processing: "ప్రాసెస్ చేయబడుతోంది...",
-    speaking: "మాట్లాడుతున్నాను...",
-    pressMic: "మైక్ నొక్కి అడగండి:",
-    stop: "ఆపు",
-    speak: "మాట్లాడు",
-    demo: "డెమో వాక్‌త్రూ",
-    demoRunning: "డెమో రన్ అవుతోంది...",
-    error: "క్షమించండి, ఒక లోపం ఏర్పడింది. దయచేసి మళ్లీ ప్రయత్నించండి.",
-    noProcess: "నేను దానిని ప్రాసెస్ చేయలేకపోయాను. దయచేసి మళ్లీ ప్రయత్నించండి.",
-    analysisComplete: "విశ్లేషణ పూర్తయింది. {total} ఖాతాలలో {suspicious} అనుమానాస్పద ఖాతాలు మరియు {rings} మోసపూరిత రింగ్‌లు కనుగొనబడ్డాయి.",
-    quickCsvFormat: "CSV ఫార్మాట్?",
-    quickHowToUpload: "ఎలా అప్‌లోడ్ చేయాలి?",
-    quickColumns: "ఏ నిలువు వరుసలు అవసరం?",
-    quickExplainNodes: "అనుమానాస్పద నోడ్‌లను వివరించండి",
-    quickSummarize: "కనుగొన్న విషయాలను సంగ్రహించండి",
-    quickFanIn: "ఫ్యాన్-ఇన్ ప్యాటర్న్ అంటే ఏమిటి?",
-    quickHowManyRings: "ఎన్ని ఫ్రాడ్ రింగ్‌లు ఉన్నాయి?",
-    demoStep1: "ఈ మనీ మ్యూలింగ్ డిటెక్షన్ ఇంజిన్ యాప్‌ని పరిచయం చేయండి.",
-    demoStep2: "ఇక్కడ ఫ్రాడ్ డిటెక్షన్ అల్గారిథమ్‌లు ఎలా పనిచేస్తాయో వివరించండి.",
-    demoStep3_result: "కనుగొనబడిన అగ్ర అనుమానాస్పద ఖాతాలను హైలైట్ చేయండి.",
-    demoStep3_noResult: "విశ్లేషణ కోసం నేను CSV ఫైల్‌ను ఎలా అప్‌లోడ్ చేయాలి?",
-    demoStep4: "{lang}లో హలో చెప్పడం ద్వారా మీ బహుభాషా మద్దతును ప్రదర్శించండి.",
-  },
-  ta: {
-    ready: "தயார்",
-    listening: "கேட்கிறது...",
-    processing: "செயலாக்கப்படுகிறது...",
-    speaking: "பேசுகிறது...",
-    pressMic: "மைக்கை அழுத்தி கேட்கவும்:",
-    stop: "நிறுத்து",
-    speak: "பேசு",
-    demo: "டெமோ ஒத்திகை",
-    demoRunning: "டெமோ இயங்குகிறது...",
-    error: "மன்னிக்கவும், ஒரு பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.",
-    noProcess: "எங்களால் அதைச் செயல்படுத்த முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
-    analysisComplete: "பகுப்பாய்வு முடிந்தது. {total} கணக்குகளில் {suspicious} சந்தேகத்திற்குரிய கணக்குகள் மற்றும் {rings} மோசடி வளையங்கள் கண்டறியப்பட்டுள்ளன.",
-    quickCsvFormat: "CSV வடிவம்?",
-    quickHowToUpload: "எப்படி பதிவேற்றுவது?",
-    quickColumns: "என்ன நெடுவரிசைகள் தேவை?",
-    quickExplainNodes: "சந்தேகத்திற்குரிய முனைகளை விளக்குக",
-    quickSummarize: "கண்டுபிடிப்புகளை சுருக்கமாக கூறுக",
-    quickFanIn: "ஃபேன்-இன் பேட்டர்ன் என்றால் என்ன?",
-    quickHowManyRings: "எத்தனை மோசடி வளையங்கள் உள்ளன?",
-    demoStep1: "இந்த மணி மியூலிங் கண்டறிதல் இயந்திர பயன்பாட்டை அறிமுகப்படுத்தவும்.",
-    demoStep2: "மோசடி கண்டறிதல் வழிமுறைகள் இங்கு எவ்வாறு செயல்படுகின்றன என்பதை விளக்குக.",
-    demoStep3_result: "கண்டறியப்பட்ட சிறந்த சந்தேகத்திற்குரிய கணக்குகளை முன்னிலைப்படுத்தவும்.",
-    demoStep3_noResult: "பகுப்பாய்விற்கு CSV கோப்பை எவ்வாறு பதிவேற்றுவது?",
-    demoStep4: "{lang} மொழியில் வணக்கம் கூறி உங்கள் பன்மொழி ஆதரவை வெளிப்படுத்துங்கள்.",
-  },
-  kn: {
-    ready: "ಸಿದ್ಧವಾಗಿದೆ",
-    listening: "ಆಲಿಸಲಾಗುತ್ತಿದೆ...",
-    processing: "ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತಿದೆ...",
-    speaking: "ಮಾತನಾಡಲಾಗುತ್ತಿದೆ...",
-    pressMic: "ಮೈಕ್ ಒತ್ತಿ ಕೇಳಿ:",
-    stop: "ನಿಲ್ಲಿಸಿ",
-    speak: "ಮಾತನಾಡಿ",
-    demo: "ಡೆಮೊ ವಾಕ್‌ಥ್ರೂ",
-    demoRunning: "ಡೆಮೊ ರನ್ ಆಗುತ್ತಿದೆ...",
-    error: "ಕ್ಷಮಿಸಿ, ದೋಷ ಉಂಟಾಗಿದೆ. ದಯವಿಟ್ಟು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.",
-    noProcess: "ನನಗೆ ಅದನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.",
-    analysisComplete: "ವಿಶ್ಲೇಷಣೆ ಪೂರ್ಣಗೊಂಡಿದೆ. {total} ಖಾತೆಗಳಲ್ಲಿ {suspicious} ಅನುಮಾನಾಸ್ಪದ ಖಾತೆಗಳು ಮತ್ತು {rings} ವಂಚನೆ ರಿಂಗ್‌ಗಳು ಕಂಡುಬಂದಿವೆ.",
-    quickCsvFormat: "CSV ಫಾರ್ಮ್ಯಾಟ್?",
-    quickHowToUpload: "ಹೇಗೆ ಅಪ್‌ಲೋಡ್ ಮಾಡುವುದು?",
-    quickColumns: "ಯಾವ ಕಾಲಮ್‌ಗಳು ಬೇಕು?",
-    quickExplainNodes: "ಅನುಮಾನಾಸ್ಪದ ನೋಡ್‌ಗಳನ್ನು ವಿವರಿಸಿ",
-    quickSummarize: "ಶೋಧನೆಗಳನ್ನು ಸಾರಾಂಶಗೊಳಿಸಿ",
-    quickFanIn: "ಫ್ಯಾನ್-ಇನ್ ಪ್ಯಾಟರ್ನ್ ಎಂದರೇನು?",
-    quickHowManyRings: "ಎಷ್ಟು ವಂಚನೆ ರಿಂಗ್‌ಗಳಿವೆ?",
-    demoStep1: "ಈ ಮನಿ ಮ್ಯೂಲಿಂಗ್ ಡಿಟೆಕ್ಷನ್ ಎಂಜಿನ್ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಪರಿಚಯಿಸಿ.",
-    demoStep2: "ವಂಚನೆ ಪತ್ತೆ ಅಲ್ಗಾರಿದಮ್‌ಗಳು ಇಲ್ಲಿ ಹೇಗೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತವೆ ಎಂಬುದನ್ನು ವಿವರಿಸಿ.",
-    demoStep3_result: "ಕಂಡುಬಂದ ಪ್ರಮುಖ ಅನುಮಾನಾಸ್ಪದ ಖಾತೆಗಳನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ.",
-    demoStep3_noResult: "ವಿಶ್ಲೇಷಣೆಗಾಗಿ ನಾನು CSV ಫೈಲ್ ಅನ್ನು ಹೇಗೆ ಅಪ್‌ಲೋಡ್ ಮಾಡುವುದು?",
-    demoStep4: "{lang} ನಲ್ಲಿ ಹಲೋ ಹೇಳುವ ಮೂಲಕ ನಿಮ್ಮ ಬಹುಭಾಷಾ ಬೆಂಬಲವನ್ನು ಪ್ರದರ್ಶಿಸಿ.",
-  }
 };
 
 export const getTranslation = (lang: string, key: string, params?: Record<string, string | number>) => {
@@ -161,21 +110,36 @@ export const getTranslation = (lang: string, key: string, params?: Record<string
 export const findBestVoice = (langCode: string): SpeechSynthesisVoice | null => {
   if (typeof window === "undefined" || !window.speechSynthesis) return null;
   const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) return null;
+
+  if (langCode === "en") {
+    // Prefer Indian English, then US, then GB, then any English
+    return (
+      voices.find(v => v.lang === "en-IN") ||
+      voices.find(v => v.lang === "en-US") ||
+      voices.find(v => v.lang === "en-GB") ||
+      voices.find(v => v.lang.startsWith("en")) ||
+      null
+    );
+  }
+
+  if (langCode === "hi") {
+    // Prefer hi-IN, then any Hindi voice
+    return (
+      voices.find(v => v.lang === "hi-IN" || v.lang.replace("_", "-") === "hi-IN") ||
+      voices.find(v => v.lang.startsWith("hi")) ||
+      // Last resort: any Indian-English voice for Hindi text (TTS will still read Devanagari on some systems)
+      voices.find(v => v.lang === "en-IN") ||
+      null
+    );
+  }
+
+  // Generic fallback (should not be reached with only en/hi, but kept for safety)
   const lang = LANGUAGES.find(l => l.code === langCode);
   const targetLocale = lang?.voice || "en-IN";
-  
-  // 1. Try exact match for locale (e.g., hi-IN)
-  let voice = voices.find(v => v.lang === targetLocale || v.lang.replace("_", "-") === targetLocale);
-  
-  // 2. Try match for language prefix (e.g., hi)
-  if (!voice) {
-    voice = voices.find(v => v.lang.startsWith(langCode));
-  }
-  
-  // 3. Fallback to any Indian voice if available
-  if (!voice && targetLocale.endsWith("-IN")) {
-    voice = voices.find(v => v.lang.endsWith("-IN"));
-  }
-  
-  return voice || null;
+  return (
+    voices.find(v => v.lang === targetLocale || v.lang.replace("_", "-") === targetLocale) ||
+    voices.find(v => v.lang.startsWith(langCode)) ||
+    null
+  );
 };
