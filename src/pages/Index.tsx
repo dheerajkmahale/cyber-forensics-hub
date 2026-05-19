@@ -358,28 +358,128 @@ const Index: React.FC = () => {
           doc.text("⚠ ACTIVE ASSETS", 115, tableY + 5.5);
         }
 
-        doc.setFont("Helvetica", "normal");
-        doc.setTextColor(100, 116, 139);
         const reason = acc.reasons[0] || "Suspicious Flow Linkage";
         doc.text(reason.length > 25 ? reason.slice(0, 22) + "..." : reason, 150, tableY + 5.5);
 
         tableY += 9;
       });
 
-      // Authorization Signature Block
+      // Authorization Signature Block on Page 1 (Brief notice)
       doc.setTextColor(51, 65, 85);
       doc.setFont("Helvetica", "bold");
       doc.setFontSize(8);
-      doc.text("CRIMINAL INVESTIGATION ENDORSEMENT STATEMENT", 15, tableY + 12);
+      doc.text("PRELIMINARY FINDINGS ONLY — DUAL PAGE DOSSIER", 15, tableY + 12);
       
       doc.setFont("Helvetica", "normal");
       doc.setFontSize(7.5);
-      doc.text("The financial network routes evaluated herein exhibit high-confidence signs of organized shell stratification,", 15, tableY + 17);
-      doc.text("smurfing micro-deposits, or circular loop routing. Assets listed as FROZEN are restricted under forensic order.", 15, tableY + 21);
+      doc.text("Case metadata maps to deep regulatory indicators. Refer to Page 2 for comprehensive PMLA Section 3/4 breakdowns.", 15, tableY + 17);
 
-      doc.line(135, tableY + 32, 190, tableY + 32);
+      // ================= PAGE 2: FORENSIC INVESTIGATION BRIEFING & REGULATORY PRECEDENTS =================
+      doc.addPage();
+      
+      // Page 2 Header Banner
+      doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.rect(0, 0, 210, 15, "F");
+      
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("Helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text("FORENSIC INTELLIGENCE ANALYTICAL COMPLIANCE DOSSIER", 15, 10);
+      
+      // Reset text color
+      doc.setTextColor(51, 65, 85);
+      
+      // Section 1: Detailed Laundering Typologies
+      doc.setFontSize(10);
+      doc.setFont("Helvetica", "bold");
+      doc.text("1. METHODOLOGY & TECHNICAL SCHEMES DETECTED", 15, 30);
+      doc.setDrawColor(226, 232, 240);
+      doc.line(15, 32, 195, 32);
+      
+      doc.setFont("Helvetica", "normal");
+      doc.setFontSize(8.5);
+      
+      let typologiesY = 40;
+      doc.setFont("Helvetica", "bold");
+      doc.text("A. Structuring & Smurfing:", 15, typologiesY);
+      doc.setFont("Helvetica", "normal");
+      doc.text("Multiple fragmented micro-deposits structured below statutory reporting limits ($10,000 / INR 10 Lakhs)", 15, typologiesY + 5);
+      doc.text("transiting unverified mule wallets to evade anti-money laundering (AML) rule-based thresholds.", 15, typologiesY + 9);
+      
+      typologiesY += 17;
+      doc.setFont("Helvetica", "bold");
+      doc.text("B. Corporate Layering & Stratification:", 15, typologiesY);
+      doc.setFont("Helvetica", "normal");
+      doc.text("Deep nested multi-hop asset relays crossing sequential shell corporate fronts lacking commercial", 15, typologiesY + 5);
+      doc.text("substance, designed to obscure the Ultimate Beneficial Ownership (UBO) mapping path.", 15, typologiesY + 9);
+      
+      typologiesY += 17;
+      doc.setFont("Helvetica", "bold");
+      doc.text("C. Circular Loop Topologies:", 15, typologiesY);
+      doc.setFont("Helvetica", "normal");
+      doc.text("High-frequency circular clearing vectors routing capital through intermediary accounts back to the", 15, typologiesY + 5);
+      doc.text("source, maximizing operational noise and simulating trade-based transactions.", 15, typologiesY + 9);
+      
+      // Section 2: Statutory & Legal Framework Directives
+      let legalY = 110;
+      doc.setFont("Helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text("2. REGULATORY & STATUTORY INDICTMENT PRECEDENTS", 15, legalY);
+      doc.line(15, legalY + 2, 195, legalY + 2);
+      
+      doc.setFont("Helvetica", "normal");
+      doc.setFontSize(8.5);
+      
+      legalY += 10;
+      doc.setFont("Helvetica", "bold");
+      doc.text("A. Prevention of Money Laundering Act (PMLA, Section 3 & 4):", 15, legalY);
+      doc.setFont("Helvetica", "normal");
+      doc.text("All asset locks listed on Page 1 are provisionally frozen under statutory suspicion of laundering.", 15, legalY + 5);
+      doc.text("Section 3 defines laundering offenses, and Section 4 mandates rigorous imprisonment for 3 to 7 years.", 15, legalY + 9);
+      
+      legalY += 17;
+      doc.setFont("Helvetica", "bold");
+      doc.text("B. Financial Action Task Force (FATF Recommendation 15):", 15, legalY);
+      doc.setFont("Helvetica", "normal");
+      doc.text("Enforces global Travel Rule thresholds, mandating immediate information collection and transmission", 15, legalY + 5);
+      doc.text("for transactions exceeding $1,000 / €1,000, requiring active VASP threat monitoring models.", 15, legalY + 9);
+      
+      // Section 3: Remediations & Next Steps
+      let remediationY = 175;
+      doc.setFont("Helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text("3. TACTICAL INVESTIGATIVE RECOMMENDATIONS", 15, remediationY);
+      doc.line(15, remediationY + 2, 195, remediationY + 2);
+      
+      doc.setFont("Helvetica", "normal");
+      doc.setFontSize(8.5);
+      
+      remediationY += 10;
+      doc.text("1. Deploy rate-limiting temporal filters to restrict outward clearing if high-velocity smurfing is detected.", 15, remediationY);
+      doc.text("2. Initiate formal mutual legal assistance treaties (MLAT) with offshore Caymans & Seychelles registries.", 15, remediationY + 6);
+      doc.text("3. Submit immediate Suspicious Transaction Reports (STR) to the national Financial Intelligence Unit.", 15, remediationY + 12);
+      
+      // Endorsement on Page 2 Bottom
+      let endY = 220;
+      doc.setFillColor(lightBg[0], lightBg[1], lightBg[2]);
+      doc.rect(15, endY, 180, 45, "F");
+      doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.rect(15, endY, 180, 45, "S");
+      
+      doc.setTextColor(51, 65, 85);
+      doc.setFont("Helvetica", "bold");
+      doc.setFontSize(8.5);
+      doc.text("AUTHORIZED FORENSIC ENDORSEMENT & COMPLIANCE SIGN-OFF", 20, endY + 8);
+      
+      doc.setFont("Helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.text("The financial network routes evaluated herein exhibit high-confidence signs of organized shell stratification,", 20, endY + 16);
+      doc.text("smurfing micro-deposits, or circular loop routing. Assets listed as FROZEN are restricted under forensic order.", 20, endY + 21);
+      doc.text("This analytical dossier is certified for legal submission to prosecuting judicial authorities.", 20, endY + 26);
+      
+      doc.line(130, endY + 36, 185, endY + 36);
       doc.setFontSize(7);
-      doc.text("HYPERION-CF INTEL DIVISION VERIFIED", 135, tableY + 36);
+      doc.text("HYPERION-CF FORENSIC DIVISION SECURE", 130, endY + 41);
 
       // Save PDF Dossier
       doc.save(`${caseId}_forensics_dossier.pdf`);
