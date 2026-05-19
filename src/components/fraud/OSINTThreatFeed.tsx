@@ -27,7 +27,7 @@ export const OSINTThreatFeed: React.FC = () => {
     const interval = setInterval(() => {
       const selected = stream[Math.floor(Math.random() * stream.length)];
       const newAlert: ThreatAlert = {
-        id: `OS-${Math.floor(100 + Math.random() * 900)}`,
+        id: `OS-${Math.floor(100 + Math.random() * 900)}-${Date.now()}`,
         source: selected.source,
         payload: selected.payload,
         severity: selected.severity,

@@ -1,6 +1,6 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Shield, Mail, Lock, User, Chrome } from "lucide-react";
+import { Shield, Mail, Lock, User } from "lucide-react";
 import MatrixRain from "@/components/MatrixRain";
 import CyberShieldLogo from "@/components/CyberShieldLogo";
 import { Button } from "@/components/ui/button";
@@ -69,20 +69,6 @@ const Auth: React.FC = () => {
     }
   };
 
-  const handleGoogle = async () => {
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: window.location.origin,
-      },
-    });
-    setLoading(false);
-    if (error) {
-      toast({ title: "Google sign-in failed", description: error.message, variant: "destructive" });
-    }
-  };
-
   const title = mode === "signup" ? "CREATE SECURE ACCESS" : mode === "forgot" ? "RECOVER ACCESS" : "OPERATOR LOGIN";
 
   return (
@@ -95,14 +81,6 @@ const Auth: React.FC = () => {
           <h1 className="mt-4 font-display text-xl font-bold tracking-widest text-foreground">{title}</h1>
           <p className="mt-2 text-xs font-mono text-muted-foreground">Money Muling Detection Engine</p>
         </div>
-
-        {mode !== "forgot" && (
-          <Button type="button" variant="outline" className="mb-4 w-full border-border/60 bg-background/70" onClick={handleGoogle} disabled={loading}>
-            <Chrome className="h-4 w-4" /> Continue with Google
-          </Button>
-        )}
-
-        {mode !== "forgot" && <div className="mb-4 h-px bg-border/50" />}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === "signup" && (

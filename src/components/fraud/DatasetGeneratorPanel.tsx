@@ -37,6 +37,14 @@ export const DatasetGeneratorPanel: React.FC<DatasetGeneratorPanelProps> = ({
   const [logs, setLogs] = useState<{ id: string; text: string; type: "info" | "success" | "warn" | "error" }[]>([
     { id: "init", text: "💽 System Core Ready. Dataset generator idle.", type: "info" }
   ]);
+  // Store history of generated datasets for user to revisit
+  const [generatedDatasets, setGeneratedDatasets] = useState<Array<{ scenarioName: string; transactions: Transaction[]; result: AnalysisResult }>>([]);
+  
+  // Local states for architecture requirement
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [graphData, setGraphData] = useState<any[]>([]);
+  const [telemetry, setTelemetry] = useState<any>({});
+  const [alerts, setAlerts] = useState<any[]>([]);
 
   const addLog = (text: string, type: "info" | "success" | "warn" | "error" = "info") => {
     const timestamp = new Date().toLocaleTimeString();
@@ -48,12 +56,28 @@ export const DatasetGeneratorPanel: React.FC<DatasetGeneratorPanelProps> = ({
 
   const handleGenerateStatic = (type: ScenarioType) => {
     try {
+      // 10. Architecture Requirement: State reset before dataset injection
+      setTransactions([]);
+      setLogs([]);
+      setGraphData([]);
+      setTelemetry({});
+      setAlerts([]);
+
       addLog(`Initializing synthetic scenario compilation: [${type.toUpperCase()}]...`, "info");
-      const { transactions, result, scenarioName } = generateScenarioData(type);
+      const { transactions: newTxs, result, scenarioName } = generateScenarioData(type);
+      
+      // Store the new dataset in history
+      setGeneratedDatasets(prev => [...prev, { scenarioName, transactions: newTxs, result }]);
       
       onInjectResult(result, scenarioName);
+
+      // Store in local states to keep them synced
+      setTransactions(newTxs);
+      setGraphData(result.graph.nodes);
+      setTelemetry(result.summary);
+      setAlerts(result.suspicious_accounts);
       
-      addLog(`Dataset compiled successfully. Generated ${transactions.length} forensic ledger routes.`, "success");
+      addLog(`Dataset compiled successfully. Generated ${newTxs.length} forensic ledger routes.`, "success");
       addLog(`Active scenario updated ➜ ${scenarioName}`, "success");
       
       if (result.suspicious_accounts.length > 0) {
@@ -286,6 +310,25 @@ export const DatasetGeneratorPanel: React.FC<DatasetGeneratorPanelProps> = ({
               );
             })}
           </div>
+          {/* Dataset History */}
+          {generatedDatasets.length > 0 && (
+            <div className="mt-4 border-t border-border/20 pt-4">
+              <h4 className="text-xs font-mono font-bold text-foreground mb-2">Generated Datasets</h4>
+              <ul className="space-y-1">
+                {generatedDatasets.map((ds, idx) => (
+                  <li key={idx} className="flex justify-between items-center text-[10px] text-muted-foreground">
+                    <span>{ds.scenarioName}</span>
+                    <button
+                      onClick={() => onInjectResult(ds.result, ds.scenarioName)}
+                      className="px-2 py-0.5 rounded bg-primary/10 text-primary hover:bg-primary/20"
+                    >
+                      Load
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
     </div>

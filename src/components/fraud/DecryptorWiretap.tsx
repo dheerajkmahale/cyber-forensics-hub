@@ -25,11 +25,15 @@ export const DecryptorWiretap: React.FC = () => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    canvas.width = canvas.parentElement?.clientWidth || 320;
-    canvas.height = 70;
-
     let offset = 0;
     const draw = () => {
+      // Dynamically scale canvas width to match parent element clientWidth on window resizes
+      const parentWidth = canvas.parentElement?.clientWidth || 320;
+      if (canvas.width !== parentWidth) {
+        canvas.width = parentWidth;
+        canvas.height = 70;
+      }
+
       ctx.fillStyle = "rgba(2, 6, 23, 0.2)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 

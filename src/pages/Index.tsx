@@ -38,7 +38,9 @@ const ANALYSIS_STEPS = [
   "Tracing shell account chains...",
   "Computing suspicion scores...",
   "Applying false positive filters...",
-  "Generating visualization data...",
+  "Formatting detection indices...",
+  "Finalizing forensic telemetry report...",
+  "Injecting compilation results..."
 ];
 
 // Mini metric card
@@ -747,13 +749,6 @@ const Index: React.FC = () => {
         details: logMsg
       });
       setTimeout(() => setCinematicAlert(null), 3200);
-
-      toast({
-        title: logType === "alert" ? "🚨 AML CRITICAL EXPOSURE" : "⚠️ NETWORK THREAT DETECTED",
-        description: logMsg,
-        variant: "destructive",
-        duration: 4000
-      });
     }
 
     // Ingress node/edge directly into active analysisResult
@@ -863,6 +858,7 @@ const Index: React.FC = () => {
 
   const handleInjectResult = useCallback((result: AnalysisResult, scenarioName: string) => {
     setIsLoading(true);
+    setAnalysisResult(null); // Clear previous data immediately
     setProcessingTime(undefined);
     setProcessingStep(0);
     setActiveScenarioName(scenarioName);
@@ -1179,6 +1175,7 @@ const Index: React.FC = () => {
               )}
             </div>
 
+
             {/* Graph tab */}
             {activeTab === "graph" && (
               <>
@@ -1323,91 +1320,76 @@ const Index: React.FC = () => {
         privacyMode={privacyMode}
       />
 
-      {/* Cinematic Cybersecurity Red Alert Overlay */}
+      {/* Cinematic Cybersecurity Red Alert Toast/Notification (Bottom-Right Corner) */}
       {cinematicAlert?.active && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-fade-in font-mono border-[4px] border-destructive animate-pulse-glow" style={{ animationDuration: "1.5s" }}>
-          {/* Animated warning stripe headers */}
-          <div className="absolute top-0 inset-x-0 h-4 bg-destructive opacity-80 animate-pulse flex justify-around text-[9px] font-black text-white tracking-widest select-none py-0.5">
-            <span>⚠ INTEL SYSTEM ALERT ⚠</span>
-            <span>⚠ INTEL SYSTEM ALERT ⚠</span>
-            <span>⚠ INTEL SYSTEM ALERT ⚠</span>
-            <span>⚠ INTEL SYSTEM ALERT ⚠</span>
+        <div className="fixed bottom-6 right-6 z-50 w-[95vw] sm:w-[450px] bg-slate-950/95 border-2 border-destructive/80 p-5 rounded-lg shadow-[0_0_30px_rgba(239,68,68,0.3)] backdrop-blur-md animate-in fade-in slide-in-from-bottom-5 duration-300 font-mono">
+          {/* Corner brackets */}
+          <span className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-destructive" />
+          <span className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-destructive" />
+          <span className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-destructive" />
+          <span className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-destructive" />
+
+          {/* Top warning stripe */}
+          <div className="absolute top-0 inset-x-0 h-1 bg-destructive animate-pulse" />
+
+          {/* Glowing Shield Alert icon */}
+          <div className="flex items-center gap-3 mb-3 pb-2 border-b border-border/30">
+            <div className="w-9 h-9 rounded-full bg-destructive/10 border border-destructive flex items-center justify-center shrink-0">
+              <AlertTriangle className="w-5 h-5 text-destructive animate-pulse" />
+            </div>
+            <div>
+              <h2 className="text-sm font-black tracking-widest text-destructive" style={{ fontFamily: "Orbitron, monospace" }}>
+                CRITICAL THREAT INCIDENT
+              </h2>
+              <p className="text-[9px] text-muted-foreground">THREAT LEVEL: CATEGORY-V (SEVERE EXTRUSION)</p>
+            </div>
           </div>
 
-          <div className="relative max-w-xl w-full bg-slate-950 border border-destructive/60 p-6 rounded shadow-[0_0_50px_rgba(239,68,68,0.4)] overflow-hidden">
-            {/* Corner brackets */}
-            <span className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-destructive" />
-            <span className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-destructive" />
-            <span className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-destructive" />
-            <span className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-destructive" />
-
-            {/* Glowing Shield Alert icon */}
-            <div className="flex items-center gap-4 mb-4 pb-3 border-b border-border/40">
-              <div className="w-12 h-12 rounded-full bg-destructive/10 border border-destructive flex items-center justify-center shrink-0 animate-bounce">
-                <AlertTriangle className="w-6 h-6 text-destructive animate-pulse" />
-              </div>
-              <div>
-                <h2 className="text-lg font-black tracking-widest text-destructive" style={{ fontFamily: "Orbitron, monospace" }}>
-                  CRITICAL THREAT INCIDENT
-                </h2>
-                <p className="text-[10px] text-muted-foreground">THREAT LEVEL: CATEGORY-V (SEVERE EXTRUSION)</p>
-              </div>
+          {/* Narration */}
+          <div className="space-y-2 mb-4">
+            <div className="bg-destructive/5 border border-destructive/10 p-2.5 rounded text-[11px] leading-relaxed text-destructive-foreground/90 font-mono">
+              <span className="text-destructive font-bold block mb-0.5 text-[10px]">AI DETECTOR ANALYSIS:</span>
+              {cinematicAlert.text}
             </div>
-
-            {/* Narration */}
-            <div className="space-y-3 mb-6">
-              <div className="bg-destructive/5 border border-destructive/20 p-3.5 rounded text-xs leading-relaxed text-destructive-foreground/90 font-mono">
-                <span className="text-destructive font-bold block mb-1">AI DETECTOR ANALYSIS:</span>
-                {cinematicAlert.text}
-              </div>
-              
-              <div className="text-[10px] text-muted-foreground leading-relaxed">
-                <span className="text-white block font-bold mb-0.5">MITIGATION COMPLIANCE TARGETS:</span>
-                {cinematicAlert.details}
-              </div>
+            
+            <div className="text-[9.5px] text-muted-foreground leading-relaxed">
+              <span className="text-white block font-bold mb-0.5 text-[9px]">MITIGATION COMPLIANCE TARGETS:</span>
+              {cinematicAlert.details}
             </div>
+          </div>
 
-            {/* Tactical actions */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={() => {
-                  if (weightedResult && weightedResult.suspicious_accounts.length > 0) {
-                    weightedResult.suspicious_accounts.slice(0, 3).forEach(acc => {
-                      if (!frozenAccounts.has(acc.account_id)) {
-                        handleFreezeAccount(acc.account_id);
-                      }
-                    });
-                  } else {
-                    handleFreezeAccount("ACC_MULE_1");
-                    handleFreezeAccount("ACC_MULE_2");
-                    handleFreezeAccount("ACC_MULE_3");
-                  }
-                  setCinematicAlert(null);
-                  toast({
-                    title: "🔒 MULTI-WALLET LOCK COMPLETED",
-                    description: "Autonomous lock deployed successfully. Funds frozen in transit.",
+          {/* Tactical actions */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                if (weightedResult && weightedResult.suspicious_accounts.length > 0) {
+                  weightedResult.suspicious_accounts.slice(0, 3).forEach(acc => {
+                    if (!frozenAccounts.has(acc.account_id)) {
+                      handleFreezeAccount(acc.account_id);
+                    }
                   });
-                }}
-                className="flex-1 py-3 text-xs font-bold rounded border bg-destructive hover:bg-destructive/80 text-white tracking-widest transition-all duration-300 shadow-[0_0_20px_rgba(239,68,68,0.3)] hover:scale-[1.03]"
-                style={{ fontFamily: "Orbitron, monospace" }}
-              >
-                AUTONOMOUS INTERCEPT & FREEZE
-              </button>
-              <button
-                onClick={() => setCinematicAlert(null)}
-                className="py-3 px-6 text-xs font-bold rounded border border-border/40 bg-card/45 hover:bg-white/5 text-muted-foreground tracking-widest transition-colors font-mono"
-              >
-                DISMISS WARNING
-              </button>
-            </div>
-          </div>
-
-          {/* Animated warning stripe footers */}
-          <div className="absolute bottom-0 inset-x-0 h-4 bg-destructive opacity-80 animate-pulse flex justify-around text-[9px] font-black text-white tracking-widest select-none py-0.5">
-            <span>⚠ FOR FORENSIC REVIEW ONLY ⚠</span>
-            <span>⚠ FOR FORENSIC REVIEW ONLY ⚠</span>
-            <span>⚠ FOR FORENSIC REVIEW ONLY ⚠</span>
-            <span>⚠ FOR FORENSIC REVIEW ONLY ⚠</span>
+                } else {
+                  handleFreezeAccount("ACC_MULE_1");
+                  handleFreezeAccount("ACC_MULE_2");
+                  handleFreezeAccount("ACC_MULE_3");
+                }
+                setCinematicAlert(null);
+                toast({
+                  title: "🔒 MULTI-WALLET LOCK COMPLETED",
+                  description: "Autonomous lock deployed successfully. Funds frozen in transit.",
+                });
+              }}
+              className="flex-1 py-2 text-[10px] font-bold rounded border border-destructive bg-destructive hover:bg-destructive/80 text-white tracking-widest transition-all duration-300 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+              style={{ fontFamily: "Orbitron, monospace" }}
+            >
+              AUTONOMOUS INTERCEPT & FREEZE
+            </button>
+            <button
+              onClick={() => setCinematicAlert(null)}
+              className="py-2 px-4 text-[10px] font-bold rounded border border-border/40 bg-card/45 hover:bg-white/5 text-muted-foreground tracking-widest transition-colors font-mono"
+            >
+              DISMISS
+            </button>
           </div>
         </div>
       )}
