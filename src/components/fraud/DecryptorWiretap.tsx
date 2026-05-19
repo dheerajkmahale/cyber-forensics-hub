@@ -5,10 +5,18 @@ export const DecryptorWiretap: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [decrypting, setDecrypting] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [audioStreamPlayed, setAudioStreamPlayed] = useState(false);
+  const [decodedPayload, setDecodedPayload] = useState<string | null>(null);
   
   const animFrameIdRef = useRef<number | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
+
+  const CYBER_PAYLOADS = [
+    "📡 SIGNAL DECRYPTED: Outward Cayman transaction route mapped to router IP: 185.220.101.4",
+    "🏢 SHELL STRATIFICATION: Intermediary target revealed as 'Alpha Escrow Ltd' (Seychelles)",
+    "💰 SMURFING VELOCITY: Aggregator wallet identified ➜ ACC_SMURF_INTEGRATION_09",
+    "💀 DARKNET PARSING: Mixing service contract hash traced ➜ 0x5a31b...e9c18",
+    "🔓 MULE INTERCEPT: Wire transfer bypass instruction decrypted ➜ OVERRIDE_BYPASS_AML_2"
+  ];
 
   // Animate soundwaves on the canvas
   useEffect(() => {
@@ -96,6 +104,7 @@ export const DecryptorWiretap: React.FC = () => {
     if (decrypting) return;
     setDecrypting(true);
     setProgress(0);
+    setDecodedPayload(null);
     playCyberDecryptionTones();
 
     const interval = setInterval(() => {
@@ -103,6 +112,8 @@ export const DecryptorWiretap: React.FC = () => {
         if (prev >= 100) {
           clearInterval(interval);
           setDecrypting(false);
+          const randomIndex = Math.floor(Math.random() * CYBER_PAYLOADS.length);
+          setDecodedPayload(CYBER_PAYLOADS[randomIndex]);
           return 100;
         }
         return prev + 5;
@@ -111,9 +122,9 @@ export const DecryptorWiretap: React.FC = () => {
   };
 
   return (
-    <div className="bg-slate-950/70 border border-border/40 rounded-lg p-4 backdrop-blur-sm relative overflow-hidden flex flex-col justify-between" style={{ minHeight: "220px" }}>
+    <div className="bg-slate-950/70 border border-border/40 rounded-lg p-4 backdrop-blur-sm relative overflow-hidden flex flex-col justify-between" style={{ minHeight: "240px" }}>
       <div>
-        <div className="flex items-center justify-between border-b border-border/30 pb-2 mb-3">
+        <div className="flex items-center justify-between border-b border-border/30 pb-2 mb-3 select-none">
           <div className="flex items-center gap-2">
             <AudioLines className="w-3.5 h-3.5 text-primary" style={{ color: "hsl(185 100% 50%)" }} />
             <span className="text-xs font-mono font-bold tracking-wider text-foreground">🕵️‍♂️ COVERT WIRE INTERCEPT & DECRYPTOR</span>
@@ -127,11 +138,18 @@ export const DecryptorWiretap: React.FC = () => {
         <div className="bg-slate-950 border border-border/20 rounded-md overflow-hidden relative mb-3">
           <canvas ref={canvasRef} className="w-full block" style={{ height: "70px" }} />
           {decrypting && (
-            <div className="absolute top-2 right-2 text-[9px] font-mono text-cyan-400 bg-slate-950/80 px-1 py-0.5 rounded border border-cyan-500/30">
+            <div className="absolute top-2 right-2 text-[9px] font-mono text-cyan-400 bg-slate-950/80 px-1 py-0.5 rounded border border-cyan-500/30 select-none">
               DECRYPTING... {progress}%
             </div>
           )}
         </div>
+
+        {/* Decrypted Payload Display */}
+        {decodedPayload && (
+          <div className="mb-3 p-2.5 rounded bg-emerald-950/20 border border-emerald-500/30 text-[10px] font-mono text-emerald-400 animate-pulse select-text">
+            {decodedPayload}
+          </div>
+        )}
 
         {/* Decoder triggers */}
         <div className="flex items-center gap-3">
