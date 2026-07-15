@@ -21,49 +21,31 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const loadProfile = useCallback(async (userId: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data } = await (supabase as any)
-      .from("profiles")
-      .select("id,user_id,display_name,avatar_url")
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    setProfile(data ?? null);
-  }, []);
-
-  const refreshProfile = useCallback(async () => {
-    const currentUser = session?.user;
-    if (!currentUser) {
-      setProfile(null);
-      return;
+  const [session, setSession] = useState<Session | null>({
+    access_token: "mock-token",
+    refresh_token: "mock-refresh-token",
+    expires_in: 3600,
+    expires_at: Math.floor(Date.now() / 1000) + 3600,
+    token_type: "bearer",
+    user: {
+      id: "mock-user-id",
+      app_metadata: {},
+      user_metadata: {},
+      aud: "authenticated",
+      created_at: new Date().toISOString(),
     }
-    await loadProfile(currentUser.id);
-  }, [session?.user, loadProfile]);
+  } as Session);
+  
+  const [profile, setProfile] = useState<Profile | null>({
+    id: "mock-profile-id",
+    user_id: "mock-user-id",
+    display_name: "Mock User",
+    avatar_url: null,
+  });
+  
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const { data: listener } = supabase.auth.onAuthStateChange((_, nextSession) => {
-      setSession(nextSession);
-      setLoading(false);
-      if (nextSession?.user) {
-        setTimeout(() => void loadProfile(nextSession.user.id), 0);
-      } else {
-        setProfile(null);
-      }
-    });
-
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoading(false);
-      if (data.session?.user) void loadProfile(data.session.user.id);
-    });
-
-    return () => listener.subscription.unsubscribe();
-  }, [loadProfile]);
+  const refreshProfile = useCallback(async () => {}, []);
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -73,7 +55,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       loading,
       refreshProfile,
       signOut: async () => {
-        await supabase.auth.signOut();
         setSession(null);
         setProfile(null);
       },
