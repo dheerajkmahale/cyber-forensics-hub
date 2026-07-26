@@ -1,0 +1,219 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 220 20% 4%;
+    --foreground: 150 100% 85%;
+
+    --card: 220 20% 7%;
+    --card-foreground: 150 80% 80%;
+
+    --popover: 220 20% 7%;
+    --popover-foreground: 150 80% 80%;
+
+    --primary: 155 100% 50%;
+    --primary-foreground: 220 20% 4%;
+
+    --secondary: 190 100% 45%;
+    --secondary-foreground: 220 20% 4%;
+
+    --muted: 220 15% 12%;
+    --muted-foreground: 150 30% 55%;
+
+    --accent: 155 100% 40%;
+    --accent-foreground: 220 20% 4%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 155 60% 20%;
+    --input: 220 15% 10%;
+    --ring: 155 100% 50%;
+
+    --radius: 0.25rem;
+
+    /* Cyber glow colors */
+    --neon-green: 155 100% 50%;
+    --neon-cyan: 185 100% 55%;
+    --neon-blue: 210 100% 55%;
+    --dark-surface: 220 20% 6%;
+    --darker-surface: 220 25% 3%;
+
+    --sidebar-background: 220 20% 5%;
+    --sidebar-foreground: 150 80% 80%;
+    --sidebar-primary: 155 100% 50%;
+    --sidebar-primary-foreground: 220 20% 4%;
+    --sidebar-accent: 220 15% 12%;
+    --sidebar-accent-foreground: 150 80% 80%;
+    --sidebar-border: 155 60% 15%;
+    --sidebar-ring: 155 100% 50%;
+
+    /* Gradients */
+    --gradient-cyber: linear-gradient(135deg, hsl(155 100% 50% / 0.15), hsl(185 100% 55% / 0.1));
+    --gradient-hero: linear-gradient(180deg, hsl(220 20% 4%) 0%, hsl(155 100% 8% / 0.3) 50%, hsl(220 20% 4%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(220 20% 7%) 0%, hsl(220 20% 9%) 100%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(155 100% 50% / 0.15) 0%, transparent 70%);
+
+    /* Shadows */
+    --shadow-neon: 0 0 20px hsl(155 100% 50% / 0.4), 0 0 60px hsl(155 100% 50% / 0.1);
+    --shadow-cyan: 0 0 20px hsl(185 100% 55% / 0.4), 0 0 60px hsl(185 100% 55% / 0.1);
+    --shadow-card: 0 4px 30px hsl(155 100% 50% / 0.08), 0 1px 0 hsl(155 100% 50% / 0.2) inset;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: 'Orbitron', monospace;
+  }
+}
+
+@layer utilities {
+  .text-neon {
+    color: hsl(var(--neon-green));
+    text-shadow: 0 0 10px hsl(var(--neon-green) / 0.8), 0 0 30px hsl(var(--neon-green) / 0.4);
+  }
+
+  .text-neon-cyan {
+    color: hsl(var(--neon-cyan));
+    text-shadow: 0 0 10px hsl(var(--neon-cyan) / 0.8), 0 0 30px hsl(var(--neon-cyan) / 0.4);
+  }
+
+  .glow-border {
+    border: 1px solid hsl(var(--neon-green) / 0.4);
+    box-shadow: var(--shadow-card), 0 0 0 1px hsl(var(--neon-green) / 0.1);
+  }
+
+  .glow-border-cyan {
+    border: 1px solid hsl(var(--neon-cyan) / 0.4);
+    box-shadow: 0 4px 30px hsl(185 100% 55% / 0.08), 0 0 0 1px hsl(var(--neon-cyan) / 0.1);
+  }
+
+  .cyber-grid {
+    background-image:
+      linear-gradient(hsl(155 100% 50% / 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(155 100% 50% / 0.06) 1px, transparent 1px),
+      linear-gradient(hsl(155 100% 50% / 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(155 100% 50% / 0.025) 1px, transparent 1px);
+    background-size: 160px 160px, 160px 160px, 32px 32px, 32px 32px;
+  }
+
+  .forensic-vignette {
+    background:
+      radial-gradient(ellipse at top, hsl(155 100% 50% / 0.10) 0%, transparent 55%),
+      radial-gradient(ellipse at bottom, hsl(185 100% 55% / 0.08) 0%, transparent 60%);
+  }
+
+  .forensic-crosshair {
+    background-image:
+      linear-gradient(hsl(155 100% 50% / 0.5) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(155 100% 50% / 0.5) 1px, transparent 1px);
+    background-size: 100% 50%, 50% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .scan-line {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scan-line::after {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, hsl(var(--neon-green)), transparent);
+    animation: scan 3s linear infinite;
+  }
+
+  .terminal-cursor::after {
+    content: '_';
+    animation: blink 1s step-end infinite;
+    color: hsl(var(--neon-green));
+  }
+
+  .hex-pattern {
+    background-color: hsl(var(--background));
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg id='hexagons' fill='%2300ff88' fill-opacity='0.03' fill-rule='nonzero'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+}
+
+@keyframes scan {
+  0% { top: -2px; }
+  100% { top: 100%; }
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+@keyframes matrix-fall {
+  0% { transform: translateY(-100vh); opacity: 1; }
+  80% { opacity: 0.8; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { 
+    box-shadow: 0 0 10px hsl(155 100% 50% / 0.3), 0 0 30px hsl(155 100% 50% / 0.1);
+  }
+  50% { 
+    box-shadow: 0 0 30px hsl(155 100% 50% / 0.6), 0 0 80px hsl(155 100% 50% / 0.2);
+  }
+}
+
+@keyframes rotate-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes glitch {
+  0%, 90%, 100% { transform: translateX(0); }
+  92% { transform: translateX(-3px); }
+  94% { transform: translateX(3px); }
+  96% { transform: translateX(-2px); }
+  98% { transform: translateX(2px); }
+}
+
+@keyframes data-stream {
+  0% { opacity: 0; transform: translateX(-20px); }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(20px); }
+}
+
+@keyframes shield-pulse {
+  0%, 100% { filter: drop-shadow(0 0 8px hsl(155 100% 50% / 0.6)); }
+  50% { filter: drop-shadow(0 0 25px hsl(155 100% 50% / 1)) drop-shadow(0 0 50px hsl(155 100% 50% / 0.4)); }
+}
+
+.animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+.animate-float { animation: float 4s ease-in-out infinite; }
+.animate-rotate-slow { animation: rotate-slow 20s linear infinite; }
+.animate-glitch { animation: glitch 4s ease-in-out infinite; }
+.animate-shield-pulse { animation: shield-pulse 2.5s ease-in-out infinite; }
