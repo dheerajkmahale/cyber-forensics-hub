@@ -12,6 +12,20 @@ dist
 dist-ssr
 *.local
 
+# Python artifacts
+__pycache__/
+*.pyc
+forensics_hub.db
+*.db
+
+# Private environment files
+.env
+
+# Local backups and runtime files
+app_backup.py
+qa_engine.py
+qa_test.db
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
