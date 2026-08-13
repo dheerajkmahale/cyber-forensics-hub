@@ -1,0 +1,27 @@
+[DATASET] Generating 1000 synthetic transactions...
+  - Normal traffic: 600 transactions
+  - Circular rings: 150 transactions
+  - Structuring chains: 150 transactions
+  - Aggregator mules: 50 transactions
+  - Ambiguous cases: 50 transactions
+  - Generating synthetic geo-location data...
+
+[DATASET] Summary:
+  Total transactions: 1000
+  Unique accounts: 469
+  Fraudulent transactions (ground truth): 350
+  Mule transactions (ground truth): 37
+  Saved to: sample_transactions.csv
+   transaction_id     sender_id  ... receiver_lat  receiver_lon
+0  TX_NORM_000194  ACC_NORM_103  ...    43.721035    -79.479003
+1  TX_NORM_000063  ACC_NORM_138  ...   -33.970398    150.836856
+2   TX_CYC_000707    ACC_CYC_23  ...   -33.678257    151.003485
+3  TX_NORM_000056  ACC_NORM_040  ...    51.067436     -0.258577
+4   TX_CYC_000694    ACC_CYC_19  ...    43.967018    -79.334315
+5  TX_NORM_000210  ACC_NORM_037  ...    51.483939     -0.574673
+6  TX_NORM_000236  ACC_NORM_097  ...    19.205862     73.081054
+7  TX_NORM_000552  ACC_NORM_086  ...    40.662655    -73.685247
+8  TX_NORM_000081  ACC_NORM_150  ...     1.186757    103.679045
+9  TX_NORM_000572  ACC_NORM_153  ...    18.936962     73.238948
+
+[10 rows x 13 columns]

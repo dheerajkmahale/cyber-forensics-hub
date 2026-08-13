@@ -1,0 +1,6 @@
+[EVALUATE] Time elapsed: 0.15s
+[EVALUATE] Total ground truth fraudulent accounts: 230
+[EVALUATE] Total flagged accounts: 159 (mules=42, cycle_nodes=149)
+[EVALUATE] TP=34 FP=125 FN=196
+[EVALUATE] Precision: 0.2138
+[EVALUATE] Recall: 0.1478

@@ -1,0 +1,12 @@
+GRAPH: nodes=469 edges=872
+MULES detected: 42 sample: ['ACC_NORM_141', 'ACC_NORM_117', 'ACC_NORM_086', 'ACC_NORM_090', 'ACC_NORM_079', 'ACC_NORM_152', 'ACC_MULE_003', 'ACC_NORM_170', 'ACC_NORM_011', 'ACC_NORM_102']
+Cycles found (<=5): 81 sample cycles: [['ACC_NORM_136', 'ACC_NORM_181'], ['ACC_NORM_054', 'ACC_NORM_168', 'ACC_NORM_102', 'ACC_NORM_068', 'ACC_NORM_083'], ['ACC_CYC_00', 'ACC_CYC_01', 'ACC_CYC_02'], ['ACC_NORM_025', 'ACC_NORM_195', 'ACC_NORM_086', 'ACC_NORM_090', 'ACC_NORM_180'], ['ACC_NORM_145', 'ACC_NORM_157', 'ACC_NORM_173', 'ACC_NORM_192', 'ACC_NORM_198']]
+Flagged accounts total: 159 sample: ['ACC_AMB_000', 'ACC_AMB_002', 'ACC_AMB_008', 'ACC_AMB_018', 'ACC_AMB_031', 'ACC_AMB_048', 'ACC_CYC_00', 'ACC_CYC_01', 'ACC_CYC_02', 'ACC_CYC_03']
+Ground-truth fraudulent accounts: 230 sample: ['ACC_CYC_00', 'ACC_CYC_01', 'ACC_CYC_02', 'ACC_CYC_03', 'ACC_CYC_04', 'ACC_CYC_05', 'ACC_CYC_06', 'ACC_CYC_07', 'ACC_CYC_08', 'ACC_CYC_09']
+[EVALUATE] Time elapsed: 0.07s
+[EVALUATE] Total ground truth fraudulent accounts: 230
+[EVALUATE] Total flagged accounts: 159 (mules=42, cycle_nodes=149)
+[EVALUATE] TP=34 FP=125 FN=196
+[EVALUATE] Precision: 0.2138
+[EVALUATE] Recall: 0.1478
+evaluate() returned: precision=0.2138, recall=0.1478
