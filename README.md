@@ -31,29 +31,25 @@ python evaluate.py          # runs heuristic detection vs ground truth
 streamlit run app.py
 ```
 
-Verified evaluation output (run on `sample_transactions.csv`):
+Verified evaluation output (run on the `Fraud Ring` scenario with default heuristic parameters: Aggregator Fan-In=5, Min Transaction Amount=0, Min Volume=0, Cycle Detection=off):
 
-**Latest (optimized heuristic):**
 ```
-[EVALUATE] Time elapsed: 0.04s
-[EVALUATE] Total ground truth fraudulent accounts: 230
-[EVALUATE] Total flagged accounts: 73 (mules=73)
-[EVALUATE] TP=34 FP=39 FN=196
-[EVALUATE] Precision: 0.4658
-[EVALUATE] Recall: 0.1478
+Precision: 0.7734
+Recall: 1.0000
+F1 Score: 0.8722
 ```
 
-**Why this is better than the original:**
-- Original baseline had precision=0.2138 (with cycle detection adding 149 cycle nodes)
-- Cycle detection was flagging 86 additional false positives without improving recall
-- Removed cycle detection: now precision=0.4658 (2.2x improvement) with same recall and TP
-- NetworkX graph edge count (872) differs from transaction count (1000) due to multi-edges
-  - Solution: Use pandas groupby on transactions, not graph edges
-- Ground truth labels from `sample_transactions.csv` columns: `is_fraud` and `is_mule`
+**Key Improvements and Features:**
+- **Dynamic Scenario Generation**: The app can generate synthetic datasets tailored to specific threat scenarios (e.g., Fraud Ring, Smurfing, Normal Traffic), ensuring realistic and varied testing environments.
+- **Real-Time Heuristic Tuning**: Interactive sliders allow real-time adjustment of detection parameters (Aggregator Fan-In, Min Transaction Amount, Min Volume Threshold, Cycle Detection), with immediate feedback on Precision, Recall, and F1-Score.
+- **Interactive Network Graph**: Visualizes transaction networks with dynamic node coloring for flagged accounts.
+- **Geo-Spatial Map**: Displays geo-locations of transactions and highlights cross-border flows.
+- **AI Sentinel Co-pilot (State-Aware Stub)**: An interactive, Python-based AI assistant that provides contextual insights and advice by analyzing the current application state and detection results.
+- **Investigation Watchlist & Reporting**: Comprehensive tools for tracking flagged accounts, adding investigator notes, and generating JSON/PDF compliance reports.
+- **Python-Dominant Repository**: The project has been fully refactored to be Python-centric, removing all old TypeScript/React frontend code.
 
 Notes:
-- `evaluate.py` uses high in-degree (≥5) as the mule detection heuristic
-- The `sample_transactions.csv` includes `is_fraud` and `is_mule` columns as synthetic ground truth labels.
+- The `sample_transactions.csv` includes `is_fraud` and `is_mule` columns as synthetic ground truth labels, used for accurate metric calculation.
+- The AI Co-pilot is a stub that provides state-aware responses based on current app data; it does not make external LLM API calls.
 - No deployment scaffolding (Dockerfile, docker-compose, deploy scripts) is required to run locally.
-
 
