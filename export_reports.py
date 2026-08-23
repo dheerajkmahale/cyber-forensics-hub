@@ -135,7 +135,7 @@ def generate_pdf_report(account_id, df, risk_score, risk_level, notes, status):
     pdf.set_font("Helvetica", "I", size=8)
     pdf.cell(0, 5, "This report is based on synthetic transaction data for portfolio demonstration purposes.", ln=True)
     
-    return pdf.output(dest="S")
+    return bytes(pdf.output(dest="S"))
 
 def export_all_flagged_csv(risk_df, df):
     """
