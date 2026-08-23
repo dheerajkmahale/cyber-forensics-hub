@@ -18,25 +18,19 @@ source venv/bin/activate    # macOS / Linux
 pip install -r requirements.txt
 ```
 
-3. Generate or use the included dataset and run evaluation:
+3. Generate or use the included dataset and launch the Streamlit UI:
 
 ```
-python generate_dataset.py   # creates sample_transactions.csv
-python evaluate.py          # runs heuristic detection vs ground truth
-```
-
-4. Start the Streamlit UI:
-
-```
+python generate_dataset.py   # creates sample_transactions.csv if not exists
 streamlit run app.py
 ```
 
-Verified evaluation output (run on the `Fraud Ring` scenario with default heuristic parameters: Aggregator Fan-In=5, Min Transaction Amount=0, Min Volume=0, Cycle Detection=off):
+Reproducible evaluation output (run on the `All` scenario with default heuristic parameters: Aggregator Fan-In=5, Min Transaction Amount=0, Min Volume=0, Cycle Detection=off):
 
 ```
-Precision: 0.7734
-Recall: 1.0000
-F1 Score: 0.8722
+Precision: 0.3684
+Recall: 0.1966
+F1 Score: 0.2564
 ```
 
 **Key Improvements and Features:**

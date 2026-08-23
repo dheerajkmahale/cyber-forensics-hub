@@ -592,7 +592,7 @@ with col_right:
         st.caption("Double-click to reset view. Hover over nodes to inspect flow connectivity.")
         try:
             fig = create_network_graph(G_loaded, pipeline_res['flagged'])
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
         except Exception as e:
             st.error(f"Error rendering network graph: {e}")
 
@@ -613,8 +613,8 @@ with col_right:
             cross_border = df_loaded[df_loaded['sender_city'] != df_loaded['receiver_city']]
             if not cross_border.empty:
                 st.dataframe(
-                    cross_border[['transaction_id', 'sender_id', 'sender_city', 'receiver_id', 'receiver_city', 'amount', 'timestamp']].head(20),
-                    use_container_width=True
+                    cross_border[["transaction_id", "sender_id", "sender_city", "receiver_id", "receiver_city", "amount", "timestamp"]].head(20),
+                    width="stretch"
                 )
             else:
                 st.info("No cross-border transactions detected in this scenario.")
@@ -717,7 +717,7 @@ with col_right:
             
         st.divider()
         st.markdown("##### Recent Labeled Transactions (Preview)")
-        st.dataframe(df_loaded.head(15), use_container_width=True)
+        st.dataframe(df_loaded.head(15), width="stretch")
 
     with tab_watchlist:
         st.subheader("🔍 Investigation Watchlist Panel")

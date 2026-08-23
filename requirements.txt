@@ -3,3 +3,4 @@ pandas>=2.0,<3.0
 numpy>=1.26,<2.0
 streamlit>=1.30,<2.0
 fpdf2>=2.8,<3.0
+plotly>=5.0,<6.0
